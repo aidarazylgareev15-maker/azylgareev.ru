@@ -183,7 +183,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <div class="sum-item">
       <div class="sum-num">2.78M <span>₽</span></div>
       <div class="sum-label">продажи</div>
-      <div class="sum-note">вложено 505 000 ₽</div>
+      <div class="sum-note">вложено 728 500 ₽</div>
     </div>
     <div class="sum-item">
       <div class="sum-num">450<span>%</span></div>
@@ -196,7 +196,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       <div class="sum-note">4 соцсети</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">72 <span>₽</span></div>
+      <div class="sum-num">75 <span>₽</span></div>
       <div class="sum-label">средний CPM</div>
       <div class="sum-note">рынок: 250–500 ₽</div>
     </div>
@@ -260,11 +260,11 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       </tr>
       <tr>
         <td class="td-neutral">Март</td>
-        <td class="td-dim">6 000 ₽</td>
-        <td class="td-dim">13.5K</td>
-        <td class="td-dim">445 ₽</td>
+        <td class="td-dim">229 000 ₽</td>
+        <td class="td-dim">3.63M</td>
+        <td class="td-neutral">61 ₽</td>
         <td class="td-neutral">1 076 000 ₽</td>
-        <td class="td-best">17 835%</td>
+        <td class="td-num">386%</td>
         <td class="td-dim">77</td>
       </tr>
       <tr>
@@ -359,11 +359,11 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const MONTHS = ['Февраль', 'Март', 'Апрель', 'Май'];
-const BUDGET  = [147000, 6000, 298500, 54000];
+const BUDGET  = [147000, 229000, 298500, 54000];
 const SALES   = [488227, 1076103, 991431, 226379];
-const CPM     = [46.1, 445, 227.7, 35.5];
-const VIEWS   = [3189, 13.5, 1311, 1521]; // тыс.
-const ROMI    = [232, 17835, 232, 319];
+const CPM     = [46.1, 61.1, 227.7, 35.5];
+const VIEWS   = [3189, 3635, 1311, 1521]; // тыс.
+const ROMI    = [232, 386, 232, 319];
 
 const BLOGGERS = [
   { name:'Эмма',      reach:3406838, posts:78,  spend:115000, cpm:33.8  },
@@ -450,9 +450,10 @@ lineChart('chartViews', MONTHS, VIEWS, '#4eff91');
 
 // ROMI — логарифмическая шкала из-за выброса марта
 barChart('chartROI', MONTHS, [{
+  label: 'ROMI %',
   data: ROMI,
-  backgroundColor: MONTHS.map((_, i) => i === 1 ? ACC : ACC+'66'),
-}], { y:{ type:'logarithmic' }, chart:{} });
+  backgroundColor: MONTHS.map((_, i) => i === 2 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
+}], { y:{}, chart:{} });
 
 // ── BLOGGERS ──────────────────────────────────────────────────────────────────
 const maxReach = Math.max(...BLOGGERS.map(b => b.reach));
