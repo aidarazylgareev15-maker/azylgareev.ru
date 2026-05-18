@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кейсы — Айдар Азылгареев</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a; --bg-soft: #111; --bg-card: #141414;
+  --line: rgba(255,255,255,0.08); --line-hot: rgba(255,255,255,0.18);
+  --text: #ededed; --text-dim: #8a8a8a; --text-faint: #555;
+  --accent: #c6ff00; --accent-soft: rgba(198,255,0,0.1); --accent-glow: rgba(198,255,0,0.4);
+  --red: #ff5252; --warn: #ffb830;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Bricolage Grotesque', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--font-display); -webkit-font-smoothing:antialiased; }
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:1000; opacity:0.035; mix-blend-mode:overlay; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:18px 32px; font-family:var(--font-mono); font-size:11px; font-weight:500; letter-spacing:0.05em; background:rgba(10,10,10,0.8); backdrop-filter:blur(20px); border-bottom:1px solid var(--line); }
+.brand { display:flex; align-items:center; gap:12px; color:var(--text); text-decoration:none; }
+.brand-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; box-shadow:0 0 12px var(--accent-glow); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)} }
+.nav-links { display:flex; gap:24px; }
+.nav-links a { color:var(--text-dim); text-decoration:none; transition:color .2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--accent); }
+.nav-right { font-family:var(--font-mono); font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:8px; }
+.live-dot { display:inline-block; width:6px; height:6px; background:var(--accent); border-radius:50%; box-shadow:0 0 8px var(--accent-glow); animation:pulse 1.5s infinite; }
+
+/* PAGE HERO */
+.page-hero { padding:160px 48px 80px; max-width:1400px; margin:0 auto; }
+.page-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:20px; }
+.page-title { font-size:clamp(48px,6vw,88px); font-weight:300; letter-spacing:-.03em; line-height:.95; margin-bottom:28px; }
+.page-title em { font-style:italic; color:var(--text-dim); }
+.page-title strong { font-weight:700; }
+.page-sub { font-family:var(--font-mono); font-size:13px; color:var(--text-dim); max-width:560px; line-height:1.7; border-left:2px solid var(--accent); padding-left:18px; }
+
+/* CASE PAGE */
+.cases-list { max-width:1400px; margin:0 auto; padding:0 48px 120px; }
+
+.case-block {
+  margin-bottom:2px;
+  border:1px solid var(--line);
+  overflow:hidden;
+}
+.case-block + .case-block { border-top:none; }
+
+.case-header {
+  display:grid;
+  grid-template-columns:64px 1fr auto;
+  gap:32px;
+  align-items:start;
+  padding:40px 40px 36px;
+  cursor:pointer;
+  transition:background .25s;
+  position:relative;
+}
+.case-header:hover { background:var(--bg-soft); }
+.case-header::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent; transition:background .25s; }
+.case-header:hover::before { background:var(--accent); }
+
+.case-idx { font-family:var(--font-mono); font-size:11px; color:var(--text-faint); padding-top:3px; }
+.case-head-info {}
+.case-co { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--accent); text-transform:uppercase; margin-bottom:8px; }
+.case-name { font-size:26px; font-weight:500; line-height:1.1; margin-bottom:6px; }
+.case-period { font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+.case-kpi { display:flex; gap:32px; flex-wrap:wrap; }
+.kpi { text-align:right; }
+.kpi-v { font-family:var(--font-mono); font-size:22px; font-weight:700; color:var(--accent); line-height:1; }
+.kpi-l { font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--text-faint); text-transform:uppercase; margin-top:4px; }
+
+.case-body-wrap {
+  display:none;
+  border-top:1px solid var(--line);
+}
+.case-body-wrap.open { display:block; }
+
+.case-story {
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:0;
+}
+.story-text { padding:40px 40px 40px 144px; border-right:1px solid var(--line); }
+.story-h { font-family:var(--font-mono); font-size:10px; letter-spacing:.15em; color:var(--accent); text-transform:uppercase; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.story-p { font-size:15px; color:var(--text-dim); line-height:1.75; margin-bottom:20px; }
+.story-p:last-child { margin-bottom:0; }
+.story-p strong { color:var(--text); font-weight:500; }
+.story-p em { color:var(--text-dim); font-style:italic; }
+
+.story-metrics { padding:40px; }
+.metrics-title { font-family:var(--font-mono); font-size:10px; letter-spacing:.15em; color:var(--accent); text-transform:uppercase; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.metric-row { display:flex; justify-content:space-between; align-items:baseline; padding:10px 0; border-bottom:1px dashed var(--line); }
+.metric-row:last-child { border-bottom:none; }
+.m-label { font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--text-faint); text-transform:uppercase; }
+.m-val { font-family:var(--font-mono); font-size:15px; font-weight:700; color:var(--accent); }
+.m-val.neutral { color:var(--text); }
+.m-val.pos { color:#4eff91; }
+
+/* TOGGLE BUTTON */
+.case-toggle { position:absolute; right:40px; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:10px; color:var(--text-faint); letter-spacing:.1em; display:flex; align-items:center; gap:8px; transition:color .2s; }
+.toggle-arrow { display:inline-block; transition:transform .3s; font-size:14px; }
+.case-header.open .toggle-arrow { transform:rotate(180deg); }
+.case-header:hover .case-toggle { color:var(--accent); }
+
+/* BACK LINK */
+.back { display:inline-flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; color:var(--text-dim); text-decoration:none; text-transform:uppercase; margin-bottom:40px; transition:color .2s; }
+.back:hover { color:var(--accent); }
+
+/* FOOTER */
+footer { padding:32px 48px; border-top:1px solid var(--line); font-family:var(--font-mono); font-size:10px; color:var(--text-faint); display:flex; justify-content:space-between; max-width:1400px; margin:0 auto; flex-wrap:wrap; gap:12px; }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(16px); transition:opacity .6s, transform .6s; }
+.reveal.in { opacity:1; transform:none; }
+
+/* MOBILE */
+@media(max-width:960px){
+  nav { padding:14px 20px; }
+  .nav-links { display:none; }
+  .page-hero { padding:110px 20px 48px; }
+  .cases-list { padding:0 20px 80px; }
+  .case-header { grid-template-columns:1fr; gap:16px; padding:28px 20px; }
+  .case-idx { display:none; }
+  .case-kpi { gap:20px; }
+  .case-toggle { position:static; transform:none; }
+  .case-story { grid-template-columns:1fr; }
+  .story-text { padding:28px 20px; border-right:none; border-bottom:1px solid var(--line); }
+  .story-metrics { padding:28px 20px; }
+  footer { padding:24px 20px; flex-direction:column; gap:8px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="brand-dot"></span>
+    <span>AZYLGAREEV</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">ГЛАВНАЯ</a>
+    <a href="cases.html" class="active">КЕЙСЫ</a>
+    <a href="luxhomme.html">LUXHOMME</a>
+    <a href="index.html#calc">CPM CALC</a>
+    <a href="index.html#contact">КОНТАКТ</a>
+  </div>
+  <div class="nav-right"><span class="live-dot"></span>OPEN TO OFFERS</div>
+</nav>
+
+<div class="page-hero">
+  <a class="back" href="index.html">← назад</a>
+  <div class="page-eyebrow">// case_files.log</div>
+  <h1 class="page-title">
+    Три места,<br>где я <em>что-то</em><br><strong>построил</strong>
+  </h1>
+  <p class="page-sub">
+    Кликни на кейс — раскроется история: что было, что сделал, что получилось.
+  </p>
+</div>
+
+<div class="cases-list">
+
+  <!-- CASE 01 -->
+  <div class="case-block reveal">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="case-idx">01</div>
+      <div class="case-head-info">
+        <div class="case-co">LUXHOMME · WB / OZON / YM</div>
+        <div class="case-name">Контент-завод с нуля</div>
+        <div class="case-period">октябрь 2024 — май 2025 · руководитель направления</div>
+      </div>
+      <div class="case-kpi">
+        <div class="kpi"><div class="kpi-v">2.78M ₽</div><div class="kpi-l">продажи</div></div>
+        <div class="kpi"><div class="kpi-v">450%</div><div class="kpi-l">ROMI</div></div>
+        <div class="kpi"><div class="kpi-v">9.9M</div><div class="kpi-l">просмотров</div></div>
+      </div>
+      <div class="case-toggle"><span>ОТКРЫТЬ</span><span class="toggle-arrow">↓</span></div>
+    </div>
+    <div class="case-body-wrap">
+      <div class="case-story">
+        <div class="story-text">
+          <div class="story-h">// что было</div>
+          <p class="story-p">
+            Компания выводила бытовую технику на маркетплейсы и хотела видеопродвижение через блогеров.
+            На старте — ноль процессов, ноль авторов, ноль понимания что работает.
+            Нужно было собрать всё с чистого листа.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что сделал</div>
+          <p class="story-p">
+            Собрал базу из <strong>20 видеоавторов</strong> под разные площадки: Instagram, TikTok, YouTube, ВКонтакте.
+            Для каждого — отбор, договор, техническое задание, контроль выхода, оплата по акту.
+          </p>
+          <p class="story-p">
+            Разработал таблицу учёта на <strong>17 связанных листов</strong> — она считает CPM, CPC, ROMI
+            и ДРР по каждому размещению в режиме реального времени и сводит всё в один дашборд.
+            До этого отчётность велась в чатах.
+          </p>
+          <p class="story-p">
+            Тестировал авторов и форматы, убирал тех, кто не окупается, перераспределял бюджет.
+            Лучший результат — ролик Эммы про виброплатформу: <strong>2.7M просмотров при CPM 2.4 ₽</strong>.
+            Для сравнения: средний рыночный CPM у инфлюенсеров — 250–500 ₽.
+          </p>
+          <p class="story-p">
+            Параллельно вёл переговоры с авторами, закрывал юридическую часть (договоры, акты),
+            контролировал тайминги и выход контента.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что получилось</div>
+          <p class="story-p">
+            За 4 месяца: вложено <strong>505 000 ₽</strong>, получено <strong>2 780 000 ₽ продаж</strong>,
+            204 заказа, 9.91M просмотров. ROMI 450%.
+            Лучший месяц по CPM — май: 35 ₽ при рынке 250–500 ₽.
+          </p>
+          <p class="story-p">
+            <a href="luxhomme.html" style="color:var(--accent); font-family:var(--font-mono); font-size:12px; text-decoration:none; border-bottom:1px dashed var(--accent); padding-bottom:2px;">
+              → подробный разбор с графиками и видео на отдельной странице
+            </a>
+          </p>
+        </div>
+        <div class="story-metrics">
+          <div class="metrics-title">// итоги</div>
+          <div class="metric-row"><span class="m-label">ПРОДАЖИ</span><span class="m-val">2 780 000 ₽</span></div>
+          <div class="metric-row"><span class="m-label">БЮДЖЕТ</span><span class="m-val neutral">505 000 ₽</span></div>
+          <div class="metric-row"><span class="m-label">ROMI</span><span class="m-val pos">450%</span></div>
+          <div class="metric-row"><span class="m-label">ЗАКАЗЫ</span><span class="m-val neutral">204</span></div>
+          <div class="metric-row"><span class="m-label">ПРОСМОТРЫ</span><span class="m-val neutral">9.91M</span></div>
+          <div class="metric-row"><span class="m-label">CPM СРЕДНИЙ</span><span class="m-val">72 ₽</span></div>
+          <div class="metric-row"><span class="m-label">CPM ЛУЧШИЙ</span><span class="m-val">2.4 ₽</span></div>
+          <div class="metric-row"><span class="m-label">АВТОРОВ</span><span class="m-val neutral">20</span></div>
+          <div class="metric-row"><span class="m-label">РАЗМЕЩЕНИЙ</span><span class="m-val neutral">1 014</span></div>
+          <div class="metric-row"><span class="m-label">ПЛОЩАДКИ</span><span class="m-val neutral">WB / OZON / YM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 02 -->
+  <div class="case-block reveal">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="case-idx">02</div>
+      <div class="case-head-info">
+        <div class="case-co">CENTROOMSTROY · ИЖС, Казань</div>
+        <div class="case-name">Перестройка отдела маркетинга</div>
+        <div class="case-period">февраль — сентябрь 2025 · руководитель отдела маркетинга</div>
+      </div>
+      <div class="case-kpi">
+        <div class="kpi"><div class="kpi-v">−32%</div><div class="kpi-l">CPL</div></div>
+        <div class="kpi"><div class="kpi-v">+58%</div><div class="kpi-l">лиды</div></div>
+        <div class="kpi"><div class="kpi-v">+27%</div><div class="kpi-l">ROMI</div></div>
+      </div>
+      <div class="case-toggle"><span>ОТКРЫТЬ</span><span class="toggle-arrow">↓</span></div>
+    </div>
+    <div class="case-body-wrap">
+      <div class="case-story">
+        <div class="story-text">
+          <div class="story-h">// что было</div>
+          <p class="story-p">
+            Строительная компания — загородные дома и ИЖС. Реклама работала, но дорого:
+            стоимость заявки была высокой, конверсия в кампаниях около 1.8%.
+            Отдел из 6 человек работал без общей аналитики — каждый канал жил сам по себе.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что сделал</div>
+          <p class="story-p">
+            Перенастроил контекстную рекламу в <strong>Яндекс.Директ</strong>: пересегментировал аудитории,
+            запустил look-alike по существующим клиентам, убрал нерабочие группы объявлений.
+          </p>
+          <p class="story-p">
+            Поставил <strong>сквозную аналитику</strong>: теперь по каждому каналу видно
+            сколько лидов и почём. До этого решения принимались по ощущениям.
+          </p>
+          <p class="story-p">
+            Перераспределил бюджет на основе реальных данных —
+            деньги ушли туда, где стоимость заявки была ниже.
+            Выстроил отчётность для команды: еженедельный срез по каждому каналу.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что получилось</div>
+          <p class="story-p">
+            За 6 месяцев: стоимость заявки упала на <strong>32%</strong>,
+            количество лидов выросло на <strong>58%</strong>,
+            конверсия кампаний с <strong>1.8% до 3.1%</strong>, ROMI вырос на <strong>27%</strong>.
+          </p>
+        </div>
+        <div class="story-metrics">
+          <div class="metrics-title">// итоги</div>
+          <div class="metric-row"><span class="m-label">CPL</span><span class="m-val pos">−32%</span></div>
+          <div class="metric-row"><span class="m-label">ЛИДЫ</span><span class="m-val pos">+58%</span></div>
+          <div class="metric-row"><span class="m-label">CR КАМПАНИЙ</span><span class="m-val">1.8% → 3.1%</span></div>
+          <div class="metric-row"><span class="m-label">ROMI</span><span class="m-val pos">+27%</span></div>
+          <div class="metric-row"><span class="m-label">КОМАНДА</span><span class="m-val neutral">6 человек</span></div>
+          <div class="metric-row"><span class="m-label">ИНСТРУМЕНТЫ</span><span class="m-val neutral">Я.Директ</span></div>
+          <div class="metric-row"><span class="m-label">ПЕРИОД</span><span class="m-val neutral">6 мес.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 03 -->
+  <div class="case-block reveal">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="case-idx">03</div>
+      <div class="case-head-info">
+        <div class="case-co">BULANTI.SHOP · розничная сеть одежды</div>
+        <div class="case-name">CRM, Telegram-бот и маркетплейсы</div>
+        <div class="case-period">февраль 2023 — январь 2025 · руководитель отдела маркетинга</div>
+      </div>
+      <div class="case-kpi">
+        <div class="kpi"><div class="kpi-v">88%</div><div class="kpi-l">Open Rate</div></div>
+        <div class="kpi"><div class="kpi-v">+9 234</div><div class="kpi-l">подписчика</div></div>
+        <div class="kpi"><div class="kpi-v">3.2%</div><div class="kpi-l">конверсия</div></div>
+      </div>
+      <div class="case-toggle"><span>ОТКРЫТЬ</span><span class="toggle-arrow">↓</span></div>
+    </div>
+    <div class="case-body-wrap">
+      <div class="case-story">
+        <div class="story-text">
+          <div class="story-h">// что было</div>
+          <p class="story-p">
+            Розничная сеть одежды с магазинами и продажами на WB и Ozon.
+            Маркетплейсы давали трафик, но компания его не удерживала —
+            покупатели уходили и не возвращались. Своей базы практически не было.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что сделал</div>
+          <p class="story-p">
+            Настроил полную связку: <strong>CRM ↔ сайт ↔ Telegram-бот ↔ WB и Ozon</strong>
+            через API и вебхуки. Данные из всех каналов теперь сходились в одном месте.
+          </p>
+          <p class="story-p">
+            Придумал механику перевода покупателей с маркетплейсов в собственный Telegram-канал:
+            QR-коды на бирках, вкладки в заказы, воронки в боте.
+            Человек получал посылку — видел QR — попадал в бот — получал бонус.
+          </p>
+          <p class="story-p">
+            Разработал <strong>систему уровней лояльности</strong>, вёл CRM-рассылки,
+            продюсировал съёмки роликов, строил TOV бренда.
+          </p>
+          <div class="story-h" style="margin-top:28px">// что получилось</div>
+          <p class="story-p">
+            Open Rate рассылок <strong>88%</strong> (среднее по рынку 15–25%),
+            Click Rate <strong>29%</strong>, конверсия <strong>3.2%</strong>.
+            База выросла на <strong>+9 234 подписчика</strong> за период работы.
+          </p>
+        </div>
+        <div class="story-metrics">
+          <div class="metrics-title">// итоги</div>
+          <div class="metric-row"><span class="m-label">OPEN RATE</span><span class="m-val pos">88%</span></div>
+          <div class="metric-row"><span class="m-label">CLICK RATE</span><span class="m-val">29%</span></div>
+          <div class="metric-row"><span class="m-label">КОНВЕРСИЯ</span><span class="m-val">3.2%</span></div>
+          <div class="metric-row"><span class="m-label">БАЗА +</span><span class="m-val pos">+9 234</span></div>
+          <div class="metric-row"><span class="m-label">КАНАЛЫ</span><span class="m-val neutral">TG / WB / OZ</span></div>
+          <div class="metric-row"><span class="m-label">ИНСТРУМЕНТЫ</span><span class="m-val neutral">CRM / API / бот</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>AIDAR AZYLGAREEV · azylgareev.ru</span>
+  <span>
+    <a href="https://t.me/aidarazylgareev" target="_blank" style="color:var(--text-faint);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">@aidarazylgareev</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:aidarazylgareev15@gmail.com" style="color:var(--text-faint);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">aidarazylgareev15@gmail.com</a>
+  </span>
+</footer>
+
+<script>
+function toggleCase(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.case-body-wrap').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.case-header').forEach(h => h.classList.remove('open'));
+  const labels = document.querySelectorAll('.case-toggle span:first-child');
+  labels.forEach(l => l.textContent = 'ОТКРЫТЬ');
+  if (!isOpen) {
+    body.classList.add('open');
+    header.classList.add('open');
+    header.querySelector('.case-toggle span:first-child').textContent = 'ЗАКРЫТЬ';
+    setTimeout(() => header.scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+  }
+}
+const io = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold:.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

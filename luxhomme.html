@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кейс LUXHOMME — Айдар Азылгареев</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0a; --bg-soft:#111; --bg-card:#141414;
+  --line:rgba(255,255,255,0.08); --line-hot:rgba(255,255,255,0.18);
+  --text:#ededed; --text-dim:#8a8a8a; --text-faint:#555;
+  --accent:#c6ff00; --accent-soft:rgba(198,255,0,0.1); --accent-glow:rgba(198,255,0,0.4);
+  --font-mono:'JetBrains Mono',monospace;
+  --font-display:'Bricolage Grotesque',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:0.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;background:rgba(10,10,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none;}
+.brand-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent-glow);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{color:var(--text-dim);text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);}
+.nav-right{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);animation:pulse 1.5s infinite;}
+
+.back{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;margin-bottom:40px;transition:color .2s;}
+.back:hover{color:var(--accent);}
+
+/* HERO */
+.lx-hero{padding:140px 48px 0;max-width:1400px;margin:0 auto;}
+.lx-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:20px;}
+.lx-title{font-size:clamp(52px,7vw,100px);font-weight:300;letter-spacing:-.035em;line-height:.92;margin-bottom:36px;}
+.lx-title em{font-style:italic;color:var(--text-dim);}
+.lx-title strong{font-weight:700;}
+
+.lx-summary{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:2px;}
+.sum-item{background:var(--bg);padding:28px 32px;}
+.sum-num{font-family:var(--font-mono);font-size:44px;font-weight:700;letter-spacing:-.04em;color:var(--accent);line-height:1;margin-bottom:6px;}
+.sum-num span{font-size:22px;color:var(--text-dim);}
+.sum-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+.sum-note{font-size:13px;color:var(--text-faint);margin-top:6px;}
+
+/* SECTIONS */
+.lx-section{max-width:1400px;margin:0 auto;padding:80px 48px 0;}
+.sec-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:16px;}
+.sec-title{font-size:clamp(32px,4vw,52px);font-weight:300;letter-spacing:-.025em;line-height:1;margin-bottom:40px;border-bottom:1px solid var(--line);padding-bottom:28px;}
+.sec-title em{font-style:italic;color:var(--text-dim);}
+.sec-title strong{font-weight:700;}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+.chart-box{background:var(--bg-card);padding:32px;}
+.chart-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px;}
+canvas{width:100%!important;height:220px!important;}
+
+/* MONTH TABLE */
+.month-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px;margin-top:32px;}
+.month-table th{text-align:left;padding:10px 16px;border-bottom:2px solid var(--line-hot);color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;font-size:10px;font-weight:400;}
+.month-table td{padding:12px 16px;border-bottom:1px dashed var(--line);}
+.month-table tr:last-child td{border-bottom:none;}
+.month-table tr:hover td{background:var(--bg-soft);}
+.td-num{color:var(--accent);font-weight:700;}
+.td-neutral{color:var(--text);}
+.td-dim{color:var(--text-dim);}
+.td-best{color:#4eff91;}
+
+/* TOP BLOGGERS */
+.bloggers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.blogger-card{background:var(--bg-card);padding:24px 20px;transition:background .25s;}
+.blogger-card:hover{background:var(--bg-soft);}
+.bl-name{font-size:18px;font-weight:600;margin-bottom:4px;}
+.bl-posts{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);letter-spacing:.08em;margin-bottom:16px;}
+.bl-reach{font-family:var(--font-mono);font-size:26px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:4px;}
+.bl-reach-l{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:12px;}
+.bl-cpm{font-family:var(--font-mono);font-size:12px;}
+.bl-cpm .v{color:var(--accent);}
+.bl-bar{margin-top:12px;height:3px;background:var(--line-hot);}
+.bl-bar .fill{height:100%;background:var(--accent);}
+
+/* PLATFORMS */
+.platform-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.platform-card{background:var(--bg-card);padding:28px 24px;}
+.pl-name{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;}
+.pl-reach{font-family:var(--font-mono);font-size:32px;font-weight:700;color:var(--text);line-height:1;margin-bottom:6px;}
+.pl-reach em{font-size:18px;color:var(--text-dim);font-style:normal;}
+.pl-share{margin-top:12px;}
+.pl-bar{height:4px;background:var(--line-hot);margin-bottom:6px;}
+.pl-bar .fill{height:100%;background:var(--accent);}
+.pl-pct{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+
+/* VIDEOS */
+.videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.video-card{background:var(--bg-card);overflow:hidden;position:relative;cursor:pointer;transition:background .25s;}
+.video-card:hover{background:var(--bg-soft);}
+.video-thumb{width:100%;aspect-ratio:9/16;background:var(--bg-soft);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.video-thumb-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.play-btn{width:48px;height:48px;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:18px;transition:all .2s;}
+.video-card:hover .play-btn{background:var(--accent);color:var(--bg);}
+.video-thumb-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%;opacity:.15;}
+.video-thumb-grid span{background:var(--line-hot);border:1px solid var(--bg);}
+.video-info{padding:20px;}
+.vi-author{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+.vi-product{font-size:14px;font-weight:500;margin-bottom:10px;}
+.vi-stats{display:flex;gap:16px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.vi-stats strong{color:var(--text);}
+.video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;pointer-events:none;}
+.video-card:hover .video-overlay{background:rgba(198,255,0,0.04);}
+
+/* NOTE */
+.add-video-note{margin-top:20px;padding:20px 24px;border:1px dashed var(--line-hot);font-family:var(--font-mono);font-size:12px;color:var(--text-faint);line-height:1.6;}
+.add-video-note strong{color:var(--accent);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s;}
+.reveal.in{opacity:1;transform:none;}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+/* MOBILE */
+@media(max-width:960px){
+  nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .lx-hero,.lx-section{padding-left:20px;padding-right:20px;}
+  .lx-hero{padding-top:110px;}
+  .lx-section{padding-top:56px;}
+  .lx-summary{grid-template-columns:1fr 1fr;}
+  .sum-item{padding:20px;}
+  .sum-num{font-size:30px;}
+  .charts-grid{grid-template-columns:1fr;}
+  .bloggers-grid{grid-template-columns:1fr 1fr;}
+  .platform-grid{grid-template-columns:1fr 1fr;}
+  .videos-grid{grid-template-columns:1fr 1fr;}
+  footer{padding:24px 20px;flex-direction:column;}
+}
+@media(max-width:480px){
+  .lx-summary{grid-template-columns:1fr 1fr;}
+  .bloggers-grid{grid-template-columns:1fr 1fr;}
+  .platform-grid{grid-template-columns:1fr 1fr;}
+  .videos-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="brand-dot"></span>
+    <span>AZYLGAREEV</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">ГЛАВНАЯ</a>
+    <a href="cases.html">КЕЙСЫ</a>
+    <a href="luxhomme.html" class="active">LUXHOMME</a>
+    <a href="index.html#calc">CPM CALC</a>
+    <a href="index.html#contact">КОНТАКТ</a>
+  </div>
+  <div class="nav-right"><span class="live-dot"></span>OPEN TO OFFERS</div>
+</nav>
+
+<!-- HERO -->
+<div class="lx-hero">
+  <a class="back" href="cases.html">← все кейсы</a>
+  <div class="lx-eyebrow">// case_01 / luxhomme × WB / OZON / YM</div>
+  <h1 class="lx-title">
+    Контент-завод<br>
+    <em>с нуля</em> до<br>
+    <strong>2.78M ₽ продаж</strong>
+  </h1>
+</div>
+
+<!-- SUMMARY NUMBERS -->
+<div class="lx-section" style="padding-top:40px;">
+  <div class="lx-summary">
+    <div class="sum-item">
+      <div class="sum-num">2.78M <span>₽</span></div>
+      <div class="sum-label">продажи</div>
+      <div class="sum-note">вложено 505 000 ₽</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">450<span>%</span></div>
+      <div class="sum-label">ROMI</div>
+      <div class="sum-note">за 4 месяца</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">9.91<span>M</span></div>
+      <div class="sum-label">просмотров</div>
+      <div class="sum-note">4 соцсети</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">72 <span>₽</span></div>
+      <div class="sum-label">средний CPM</div>
+      <div class="sum-note">рынок: 250–500 ₽</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">204</div>
+      <div class="sum-label">заказа</div>
+      <div class="sum-note">WB + OZON</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">1014</div>
+      <div class="sum-label">размещений</div>
+      <div class="sum-note">20 авторов</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// динамика</div>
+  <h2 class="sec-title">Как менялись <em>показатели</em> по месяцам</h2>
+  <div class="charts-grid">
+    <div class="chart-box">
+      <div class="chart-title">бюджет и продажи по месяцам (₽)</div>
+      <canvas id="chartBudgetSales"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">CPM по месяцам (₽ за 1000 показов)</div>
+      <canvas id="chartCPM"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">просмотры по месяцам (тыс.)</div>
+      <canvas id="chartViews"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">ROMI по месяцам (%)</div>
+      <canvas id="chartROI"></canvas>
+    </div>
+  </div>
+
+  <table class="month-table" style="margin-top:2px;">
+    <thead>
+      <tr>
+        <th>МЕСЯЦ</th>
+        <th>БЮДЖЕТ</th>
+        <th>ПРОСМОТРЫ</th>
+        <th>CPM</th>
+        <th>ПРОДАЖИ</th>
+        <th>ROMI</th>
+        <th>ЗАКАЗЫ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-neutral">Февраль</td>
+        <td class="td-dim">147 000 ₽</td>
+        <td class="td-dim">3.19M</td>
+        <td class="td-neutral">46 ₽</td>
+        <td class="td-neutral">488 000 ₽</td>
+        <td class="td-num">232%</td>
+        <td class="td-dim">40</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Март</td>
+        <td class="td-dim">6 000 ₽</td>
+        <td class="td-dim">13.5K</td>
+        <td class="td-dim">445 ₽</td>
+        <td class="td-neutral">1 076 000 ₽</td>
+        <td class="td-best">17 835%</td>
+        <td class="td-dim">77</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Апрель</td>
+        <td class="td-dim">298 500 ₽</td>
+        <td class="td-dim">1.31M</td>
+        <td class="td-dim">228 ₽</td>
+        <td class="td-neutral">991 000 ₽</td>
+        <td class="td-num">232%</td>
+        <td class="td-dim">75</td>
+      </tr>
+      <tr style="background:rgba(198,255,0,0.04)">
+        <td class="td-neutral">Май ★</td>
+        <td class="td-dim">54 000 ₽</td>
+        <td class="td-dim">1.52M</td>
+        <td class="td-best">35 ₽ ↓</td>
+        <td class="td-neutral">226 000 ₽</td>
+        <td class="td-num">319%</td>
+        <td class="td-dim">12</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PLATFORMS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// площадки</div>
+  <h2 class="sec-title">Охват <em>по соцсетям</em></h2>
+  <div class="platform-grid">
+    <div class="platform-card">
+      <div class="pl-name">Instagram</div>
+      <div class="pl-reach">8.0<em>M</em></div>
+      <div class="pl-share">
+        <div class="pl-bar"><div class="fill" style="width:81%"></div></div>
+        <div class="pl-pct">81% всего охвата · 395 публикаций</div>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">TikTok</div>
+      <div class="pl-reach">1.43<em>M</em></div>
+      <div class="pl-share">
+        <div class="pl-bar"><div class="fill" style="width:14%"></div></div>
+        <div class="pl-pct">14% · 12 публикаций</div>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">YouTube</div>
+      <div class="pl-reach">437<em>K</em></div>
+      <div class="pl-share">
+        <div class="pl-bar"><div class="fill" style="width:4%"></div></div>
+        <div class="pl-pct">4% · 36 публикаций</div>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">ВКонтакте</div>
+      <div class="pl-reach">45<em>K</em></div>
+      <div class="pl-share">
+        <div class="pl-bar"><div class="fill" style="width:1%"></div></div>
+        <div class="pl-pct">&lt;1% · 13 публикаций</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BLOGGERS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// авторы</div>
+  <h2 class="sec-title">Топ <strong>8 авторов</strong> по охвату</h2>
+  <div class="bloggers-grid" id="bloggersGrid"></div>
+</div>
+
+<!-- VIDEOS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// лучшие ролики</div>
+  <h2 class="sec-title">Топ <strong>размещений</strong> — <em>реальные ссылки</em></h2>
+  <div class="videos-grid" id="videosGrid"></div>
+  <div class="add-video-note">
+    <strong>Как добавить свои ролики:</strong> открой файл luxhomme.html в любом редакторе,
+    найди массив <code>VIDEO_DATA</code> в начале скрипта и замени ссылки на нужные.
+    Поддерживаются Instagram Reels, TikTok, YouTube Shorts, ВКонтакте.
+  </div>
+</div>
+
+<footer>
+  <span>AIDAR AZYLGAREEV · azylgareev.ru · <a href="cases.html" style="color:var(--text-faint);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">← все кейсы</a></span>
+  <span>
+    <a href="https://t.me/aidarazylgareev" target="_blank" style="color:var(--text-faint);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">@aidarazylgareev</a>
+  </span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const MONTHS = ['Февраль', 'Март', 'Апрель', 'Май'];
+const BUDGET  = [147000, 6000, 298500, 54000];
+const SALES   = [488227, 1076103, 991431, 226379];
+const CPM     = [46.1, 445, 227.7, 35.5];
+const VIEWS   = [3189, 13.5, 1311, 1521]; // тыс.
+const ROMI    = [232, 17835, 232, 319];
+
+const BLOGGERS = [
+  { name:'Эмма',      reach:3406838, posts:78,  spend:115000, cpm:33.8  },
+  { name:'Гюзель',    reach:1467977, posts:74,  spend:129000, cpm:87.9  },
+  { name:'Александра',reach:1255736, posts:41,  spend:61500,  cpm:49.0  },
+  { name:'Диана',     reach:1178318, posts:10,  spend:18500,  cpm:15.7  },
+  { name:'Ирина',     reach:788567,  posts:29,  spend:48500,  cpm:61.5  },
+  { name:'Юлиана',    reach:739571,  posts:16,  spend:32500,  cpm:43.9  },
+  { name:'Гузалия',   reach:571858,  posts:42,  spend:62000,  cpm:108.4 },
+  { name:'Алия',      reach:181568,  posts:48,  spend:83000,  cpm:457.1 },
+];
+
+// ── ЗАМЕНИ ССЫЛКИ НА РЕАЛЬНЫЕ РОЛИКИ ─────────────────────────────────────────
+const VIDEO_DATA = [
+  { author:'Эмма',      product:'Виброплатформа', views:'2 700 000', cpm:'2.4 ₽',
+    url:'https://www.instagram.com/reel/DVYsWiuApv1/', platform:'Instagram' },
+  { author:'Диана',     product:'Кофемашина',     views:'1 100 000', cpm:'—',
+    url:'https://vk.ru/clip-216845528_456239893?c=1',  platform:'ВКонтакте' },
+  { author:'Александра',product:'Аэрогриль',       views:'738 500',   cpm:'2.0 ₽',
+    url:'https://vt.tiktok.com/ZS9s6yXNc/',            platform:'TikTok'    },
+  { author:'Ирина',     product:'Аэрогриль',       views:'627 000',   cpm:'10.3 ₽',
+    url:'https://www.instagram.com/reel/DUayJp_AC7p/', platform:'Instagram' },
+  { author:'Юлиана',    product:'Робот-пылесос',   views:'465 000',   cpm:'14.0 ₽',
+    url:'https://www.instagram.com/reel/DV9KMA_jPkA/', platform:'Instagram' },
+  { author:'Гузалия',   product:'Аэрогриль',       views:'400 000',   cpm:'3.8 ₽',
+    url:'https://www.instagram.com/reel/DX9zxGKOpaP/', platform:'Instagram' },
+];
+
+// ── CHART DEFAULTS ────────────────────────────────────────────────────────────
+Chart.defaults.color = '#555';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const ACC = '#c6ff00';
+const DIM = 'rgba(255,255,255,0.15)';
+
+function barChart(id, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:'#8a8a8a', boxWidth:10 } } },
+      scales: {
+        x: { grid:{ color:DIM }, ticks:{ color:'#555' } },
+        y: { grid:{ color:DIM }, ticks:{ color:'#555' },
+             ...opts.y },
+      },
+      ...opts.chart
+    }
+  });
+}
+
+function lineChart(id, labels, data, color=ACC) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[{
+      data, borderColor:color, backgroundColor:color+'22',
+      pointBackgroundColor:color, pointRadius:5, tension:.3, fill:true
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ grid:{color:DIM}, ticks:{color:'#555'} },
+        y:{ grid:{color:DIM}, ticks:{color:'#555'} }
+      }
+    }
+  });
+}
+
+// ── RENDER CHARTS ─────────────────────────────────────────────────────────────
+barChart('chartBudgetSales', MONTHS, [
+  { label:'Бюджет',  data:BUDGET, backgroundColor:'rgba(255,255,255,0.12)' },
+  { label:'Продажи', data:SALES,  backgroundColor:ACC+'cc' },
+]);
+lineChart('chartCPM',   MONTHS, CPM,   ACC);
+lineChart('chartViews', MONTHS, VIEWS, '#4eff91');
+
+// ROMI — логарифмическая шкала из-за выброса марта
+barChart('chartROI', MONTHS, [{
+  data: ROMI,
+  backgroundColor: MONTHS.map((_, i) => i === 1 ? ACC : ACC+'66'),
+}], { y:{ type:'logarithmic' }, chart:{} });
+
+// ── BLOGGERS ──────────────────────────────────────────────────────────────────
+const maxReach = Math.max(...BLOGGERS.map(b => b.reach));
+document.getElementById('bloggersGrid').innerHTML = BLOGGERS.map(b => {
+  const pct = Math.round(b.reach / maxReach * 100);
+  const reachFmt = b.reach >= 1e6
+    ? (b.reach/1e6).toFixed(2)+'M'
+    : (b.reach/1000).toFixed(0)+'K';
+  return `
+  <div class="blogger-card">
+    <div class="bl-name">${b.name}</div>
+    <div class="bl-posts">${b.posts} публикаций</div>
+    <div class="bl-reach">${reachFmt}</div>
+    <div class="bl-reach-l">просмотров</div>
+    <div class="bl-cpm">CPM <span class="v">${b.cpm} ₽</span></div>
+    <div class="bl-bar"><div class="fill" style="width:${pct}%"></div></div>
+  </div>`;
+}).join('');
+
+// ── VIDEOS ────────────────────────────────────────────────────────────────────
+document.getElementById('videosGrid').innerHTML = VIDEO_DATA.map(v => `
+  <div class="video-card" onclick="window.open('${v.url}','_blank')">
+    <div class="video-thumb">
+      <div class="video-thumb-grid">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="video-thumb-inner">
+        <div class="play-btn">▶</div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.4);text-transform:uppercase;">${v.platform}</div>
+      </div>
+    </div>
+    <div class="video-info">
+      <div class="vi-author">${v.author}</div>
+      <div class="vi-product">${v.product}</div>
+      <div class="vi-stats">
+        <span><strong>${v.views}</strong> views</span>
+        <span>CPM <strong>${v.cpm}</strong></span>
+      </div>
+    </div>
+    <div class="video-overlay"></div>
+  </div>
+`).join('');
+
+// ── REVEAL ────────────────────────────────────────────────────────────────────
+const io = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); }
+}), { threshold:.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
