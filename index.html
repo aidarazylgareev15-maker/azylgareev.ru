@@ -3,1469 +3,686 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AZYLGAREEV / OPERATOR FILE — Media Buyer Candidate</title>
+<title>AZYLGAREEV / Operator File</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #0a0a0a;
-  --bg-soft: #111111;
-  --bg-card: #141414;
-  --line: rgba(255,255,255,0.08);
-  --line-hot: rgba(255,255,255,0.18);
-  --text: #ededed;
-  --text-dim: #8a8a8a;
-  --text-faint: #555;
+  --bg: #050505;
+  --bg-soft: #0d0d0d;
+  --bg-card: #121212;
+  --line: rgba(255,255,255,0.06);
+  --line-hot: rgba(255,255,255,0.14);
+  --text: #f0f0f0;
+  --text-dim: #888;
+  --text-faint: #4a4a4a;
   --accent: #c6ff00;
-  --accent-soft: rgba(198,255,0,0.12);
+  --accent-2: #4eff91;
+  --accent-soft: rgba(198,255,0,0.1);
   --accent-glow: rgba(198,255,0,0.5);
-  --red: #ff5252;
+  --red: #ff4444;
   --warn: #ffb830;
-  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --font-mono: 'JetBrains Mono', monospace;
   --font-display: 'Bricolage Grotesque', sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.5;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  cursor: default;
+  overflow-x: hidden;
 }
 
-/* Grain overlay */
 body::before {
   content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9000;
+  opacity: 0.04; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-
-/* Scanline */
 body::after {
   content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(255,255,255,0.012) 3px,
-    transparent 4px
-  );
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9001;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(255,255,255,0.008) 3px, transparent 4px);
 }
 
-/* === BOOT SCREEN === */
-.boot {
-  position: fixed;
-  inset: 0;
+/* BOOT */
+#boot {
+  position: fixed; inset: 0;
   background: var(--bg);
   z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--accent);
-  padding: 40px;
-  flex-direction: column;
-  transition: opacity 0.6s, visibility 0.6s;
-}
-.boot.done {
-  opacity: 0;
-  visibility: hidden;
-}
-.boot-inner {
-  max-width: 600px;
-  width: 100%;
-}
-.boot-line {
-  opacity: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  margin-bottom: 6px;
-  color: var(--text-dim);
-}
-.boot-line.ok { color: var(--accent); }
-.boot-line.warn { color: var(--warn); }
-.boot-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 14px;
-  background: var(--accent);
-  vertical-align: middle;
-  animation: blink 0.8s infinite;
-}
-@keyframes blink { 50% { opacity: 0; } }
-
-.boot-line:nth-child(1) { animation: typein 0.12s 0.1s forwards; }
-.boot-line:nth-child(2) { animation: typein 0.12s 0.3s forwards; }
-.boot-line:nth-child(3) { animation: typein 0.12s 0.55s forwards; }
-.boot-line:nth-child(4) { animation: typein 0.12s 0.75s forwards; }
-.boot-line:nth-child(5) { animation: typein 0.12s 0.95s forwards; }
-.boot-line:nth-child(6) { animation: typein 0.12s 1.15s forwards; }
-.boot-line:nth-child(7) { animation: typein 0.12s 1.35s forwards; }
-.boot-line:nth-child(8) { animation: typein 0.12s 1.55s forwards; }
-.boot-line:nth-child(9) { animation: typein 0.12s 1.75s forwards; }
-@keyframes typein { to { opacity: 1; } }
-
-/* === NAV === */
-nav.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 32px;
+  display: flex; flex-direction: column;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  background: rgba(10,10,10,0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--line);
+  transition: opacity 0.8s, visibility 0.8s;
+  padding: 32px;
+  overflow: hidden;
 }
-.brand { display: flex; align-items: center; gap: 12px; color: var(--text); }
-.brand-dot {
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--accent-glow);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.85); }
-}
-.nav-links { display: flex; gap: 26px; }
-.nav-links a {
-  color: var(--text-dim);
-  text-decoration: none;
-  transition: color 0.2s;
-  position: relative;
-}
-.nav-links a:hover { color: var(--accent); }
-.nav-status {
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* === HERO === */
-.hero {
-  min-height: 100vh;
+#boot.done { opacity: 0; visibility: hidden; }
+.boot-grid {
+  flex: 1;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 60px;
-  align-items: center;
-  padding: 0 48px;
-  max-width: 1400px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding-top: 120px;
-  padding-bottom: 80px;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
 }
-.hero-l {
-  padding: 0;
-  min-width: 0;
+.boot-logs {
+  display: flex; flex-direction: column;
+  justify-content: flex-end; gap: 4px;
+  color: var(--text-faint);
+  max-height: 100%; overflow: hidden;
 }
-.hero-term {
-  min-width: 0;
-  align-self: center;
+.boot-log {
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
 }
+.boot-log.in { opacity: 1; transform: none; }
+.boot-log.in.hot { color: var(--accent); }
+.boot-log.in.warn { color: var(--warn); }
+.boot-log.in.ok::after { content: ' ✓'; color: var(--accent); }
+.boot-center {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding-left: 40px;
+  border-left: 1px solid var(--line);
+}
+.boot-id { font-size: 10px; color: var(--text-faint); letter-spacing: 0.2em; margin-bottom: 14px; }
+.boot-name {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 32px;
+}
+.boot-name strong { font-weight: 700; color: var(--accent); }
+.boot-progress { width: 100%; max-width: 400px; margin-bottom: 12px; }
+.boot-bar { height: 2px; background: rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+.boot-bar-fill {
+  position: absolute; inset: 0 auto 0 0;
+  width: 0; background: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+  transition: width 0.3s;
+}
+.boot-pct {
+  display: flex; justify-content: space-between;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--text-dim); margin-top: 8px;
+}
+.boot-skip {
+  margin-top: 28px; font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 8px 14px;
+  border: 1px solid var(--line-hot);
+  background: none; color: var(--text-dim);
+  font-family: var(--font-mono);
+  cursor: pointer; transition: all 0.2s;
+}
+.boot-skip:hover { color: var(--accent); border-color: var(--accent); }
+.boot-corner {
+  position: absolute;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--text-faint);
+}
+.boot-tl { top: 24px; left: 32px; }
+.boot-tr { top: 24px; right: 32px; color: var(--accent); }
+.boot-br { bottom: 24px; right: 32px; }
 
+/* NAV */
+nav.topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+  background: rgba(5,5,5,0.7);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  opacity: 0; transform: translateY(-100%);
+  transition: opacity 0.6s 0.3s, transform 0.6s 0.3s;
+}
+nav.topbar.in { opacity: 1; transform: none; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; }
+.brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 12px var(--accent-glow); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--accent); }
+.nav-status { display: flex; align-items: center; gap: 8px; color: var(--text-dim); }
+
+/* HERO */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 100px 48px 80px;
+  overflow: hidden;
+}
+#three-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 1400px; margin: 0 auto; width: 100%;
+  pointer-events: none;
+}
+.hero-content > * { pointer-events: auto; }
 .hero-meta {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--text-faint); text-transform: uppercase;
+  margin-bottom: 32px;
+  display: flex; gap: 24px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
 }
 .hero-meta span { position: relative; padding-left: 14px; }
-.hero-meta span::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  width: 6px; height: 1px;
-  background: var(--text-faint);
-}
+.hero-meta span::before { content: ''; position: absolute; left: 0; top: 50%; width: 6px; height: 1px; background: var(--text-faint); }
+.hero-meta .live { color: var(--accent); }
+.hero-meta .live::before { background: var(--accent); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
-.hero h1 {
+.kinetic-title {
   font-family: var(--font-display);
-  font-size: clamp(58px, 9vw, 130px);
+  font-size: clamp(64px, 13vw, 200px);
   font-weight: 300;
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-  margin-bottom: 32px;
-  color: var(--text);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  margin-bottom: 48px;
+  max-width: 1100px;
 }
-.hero h1 .strike {
-  color: var(--text-faint);
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
-  font-style: italic;
-  font-weight: 300;
+.kinetic-line { display: block; overflow: hidden; padding: 0.05em 0; }
+.kinetic-word {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.hero h1 .hot {
-  color: var(--accent);
-  font-weight: 600;
-}
-.hero h1 em {
-  font-style: italic;
-  font-weight: 300;
-  color: var(--text-dim);
-}
+.kinetic-line.in .kinetic-word { transform: translateY(0); }
+.kinetic-title .accent { color: var(--accent); font-weight: 700; font-style: italic; }
+.kinetic-title .dim { color: var(--text-dim); font-weight: 300; font-style: italic; }
 
 .hero-tag {
   font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text-dim);
-  max-width: 480px;
-  line-height: 1.7;
-  margin-bottom: 40px;
+  font-size: 14px; color: var(--text-dim);
+  max-width: 580px; line-height: 1.75;
+  margin-bottom: 48px;
   border-left: 2px solid var(--accent);
-  padding-left: 18px;
+  padding-left: 20px;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s 1.2s forwards;
 }
 .hero-tag b { color: var(--text); font-weight: 500; }
-
 .hero-cta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  display: flex; gap: 16px; flex-wrap: wrap;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s 1.4s forwards;
 }
 .btn {
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 16px 28px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 18px 32px;
   border: 1px solid var(--line-hot);
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  background: transparent; color: var(--text);
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 12px;
   transition: all 0.2s;
+  position: relative; overflow: hidden;
 }
-.btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-1px);
-}
-.btn.primary {
+.btn::before {
+  content: ''; position: absolute; inset: 0;
   background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s;
+  z-index: -1;
 }
-.btn.primary:hover {
-  background: transparent;
-  color: var(--accent);
-  box-shadow: 0 0 30px var(--accent-soft);
-}
-.btn-arrow {
-  transition: transform 0.2s;
-}
+.btn:hover { color: var(--bg); border-color: var(--accent); }
+.btn:hover::before { transform: scaleX(1); }
+.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn.primary::before { background: var(--bg); }
+.btn.primary:hover { color: var(--accent); }
+.btn-arrow { transition: transform 0.2s; }
 .btn:hover .btn-arrow { transform: translateX(4px); }
 
-/* HERO TERMINAL */
-.term {
+.hero-bottom {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-top: 60px;
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-faint);
+  letter-spacing: 0.1em;
+  opacity: 0; animation: fadeUp 1s 1.6s forwards;
+}
+.hero-bottom-l > * + * { margin-top: 4px; }
+.hero-bottom-l .accent { color: var(--accent); }
+.scroll-hint { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 9px; }
+.scroll-hint-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(180deg, var(--accent), transparent);
+  position: relative; overflow: hidden;
+}
+.scroll-hint-line::before {
+  content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+  background: var(--accent); animation: scrollDown 2s ease-in-out infinite;
+}
+@keyframes scrollDown { to { top: 100%; } }
+
+/* SECTIONS */
+.section {
+  position: relative;
+  padding: 120px 48px;
+  max-width: 1400px; margin: 0 auto;
+}
+.section-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding-bottom: 32px; margin-bottom: 64px;
+  border-bottom: 1px solid var(--line);
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.18em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.5vw, 76px);
+  font-weight: 300; line-height: 0.95; letter-spacing: -0.025em;
+  max-width: 900px;
+}
+.section-title em { font-style: italic; color: var(--text-dim); font-weight: 300; }
+.section-title .hot { color: var(--accent); font-weight: 700; }
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-faint); letter-spacing: 0.1em;
+}
+
+/* METRICS */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.metric-cell {
+  background: var(--bg);
+  padding: 36px 28px;
+  position: relative;
+  transition: background 0.3s;
+  overflow: hidden;
+}
+.metric-cell:hover { background: var(--bg-soft); }
+.metric-cell::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width 0.5s 0.2s;
+}
+.metric-cell.in::before { width: 100%; }
+.metric-tag {
+  position: absolute; top: 18px; right: 18px;
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--accent);
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+}
+.metric-num {
+  font-family: var(--font-mono);
+  font-size: 56px; font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text); line-height: 1;
+  margin-bottom: 12px;
+}
+.metric-num .accent { color: var(--accent); }
+.metric-num .small { font-size: 28px; color: var(--text-dim); }
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.14em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.metric-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+/* PIN-SCROLL CASES */
+.pin-cases {
+  position: relative;
+  height: 400vh;
+}
+.pin-cases-inner {
+  position: sticky; top: 0;
+  height: 100vh;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+.pin-cases-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+.pin-left { display: flex; flex-direction: column; gap: 28px; position: relative; }
+.pin-counter {
+  font-family: var(--font-mono);
+  font-size: 14px; color: var(--text-faint);
+  letter-spacing: 0.12em;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.pin-counter-current {
+  font-size: 80px; color: var(--accent);
+  font-weight: 700; line-height: 1;
+  letter-spacing: -0.04em;
+}
+.pin-counter-total { color: var(--text-dim); font-size: 24px; }
+.pin-progress {
+  display: flex; gap: 8px;
+  margin-bottom: 8px;
+}
+.pin-progress-step {
+  flex: 1; height: 2px;
+  background: var(--line-hot);
+  position: relative; overflow: hidden;
+  transition: background 0.4s;
+}
+.pin-progress-step.done { background: var(--accent); }
+.pin-progress-step.active { background: var(--accent); }
+.pin-co {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.15em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.pin-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.5vw, 60px);
+  font-weight: 400; line-height: 1;
+  letter-spacing: -0.025em;
+  margin-bottom: 20px;
+}
+.pin-period {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--text-dim);
+  letter-spacing: 0.06em; margin-bottom: 24px;
+}
+.pin-desc {
+  font-size: 15px; color: var(--text-dim);
+  line-height: 1.7; max-width: 500px;
+}
+.pin-desc strong { color: var(--text); font-weight: 500; }
+
+.pin-stage { position: relative; min-height: 380px; }
+.case-slide {
+  position: absolute; inset: 0;
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.6s, transform 0.6s;
+  pointer-events: none;
+}
+.case-slide.active {
+  opacity: 1; transform: none;
+  pointer-events: auto;
+}
+
+.pin-right-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.pin-stat { background: var(--bg); padding: 28px; }
+.pin-stat-v {
+  font-family: var(--font-mono);
+  font-size: 38px; font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--accent); line-height: 1; margin-bottom: 8px;
+}
+.pin-stat-v.neutral { color: var(--text); }
+.pin-stat-l {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.14em;
+  color: var(--text-faint); text-transform: uppercase;
+}
+
+/* GRAPH */
+.graph-section {
+  position: relative;
+  padding: 120px 48px;
+  max-width: 1400px; margin: 0 auto;
+}
+.graph-wrap {
+  position: relative;
+  height: 600px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+#graph-canvas { position: absolute; inset: 0; }
+.graph-tooltip {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  padding: 16px 20px;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.2s;
+  z-index: 10; min-width: 200px;
+  box-shadow: 0 0 30px var(--accent-soft);
+}
+.graph-tooltip.show { opacity: 1; }
+.gt-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+.gt-val { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.gt-note { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+.graph-legend {
+  position: absolute; bottom: 24px; left: 24px;
+  display: flex; gap: 24px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase;
+  z-index: 5;
+}
+.graph-hint {
+  position: absolute; top: 24px; right: 24px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase;
+  z-index: 5;
+}
+.graph-hint::before { content: '◉'; color: var(--accent); margin-right: 6px; }
+
+/* TERMINAL */
+.term-section { padding: 80px 48px 120px; max-width: 1400px; margin: 0 auto; }
+.terminal {
   background: var(--bg-card);
   border: 1px solid var(--line);
   font-family: var(--font-mono);
-  font-size: 12px;
-  position: relative;
-  overflow: hidden;
+  font-size: 13px;
+  position: relative; overflow: hidden;
+  max-width: 800px; margin: 0 auto;
 }
-.term::before {
-  content: '';
-  position: absolute;
-  inset: 0;
+.terminal::before {
+  content: ''; position: absolute; inset: 0;
   background: radial-gradient(circle at 30% 0%, var(--accent-soft) 0%, transparent 50%);
   pointer-events: none;
 }
 .term-head {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 16px;
+  display: flex; justify-content: space-between;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--line);
   color: var(--text-faint);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  background: rgba(0,0,0,0.3);
-  position: relative;
+  font-size: 10px; letter-spacing: 0.1em;
+  background: rgba(0,0,0,0.4);
 }
 .term-dots { display: flex; gap: 6px; }
-.term-dots span {
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: var(--line-hot);
-}
+.term-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--line-hot); }
 .term-dots span:first-child { background: var(--red); }
 .term-dots span:nth-child(2) { background: var(--warn); }
 .term-dots span:last-child { background: var(--accent); }
-
-.term-body {
-  padding: 22px 20px;
-  position: relative;
-  min-height: 380px;
-}
+.term-body { padding: 26px 24px; min-height: 380px; position: relative; }
 .term-row {
-  display: flex;
-  align-items: baseline;
-  padding: 8px 0;
+  display: flex; align-items: baseline;
+  padding: 9px 0;
   border-bottom: 1px dashed var(--line);
+  opacity: 0; transform: translateX(-10px);
+  transition: opacity 0.4s, transform 0.4s;
 }
+.term-row.in { opacity: 1; transform: none; }
 .term-row:last-child { border-bottom: none; }
 .term-key {
   color: var(--text-faint);
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 10px; letter-spacing: 0.12em;
   text-transform: uppercase;
-  flex: 0 0 130px;
+  flex: 0 0 140px;
 }
-.term-val {
-  color: var(--text);
-  font-weight: 500;
-  font-size: 14px;
-  flex: 1;
-}
-.term-val .big {
-  font-size: 22px;
-  color: var(--accent);
-  font-weight: 700;
-}
+.term-val { color: var(--text); font-weight: 500; font-size: 15px; flex: 1; }
+.term-val .big { font-size: 24px; color: var(--accent); font-weight: 700; }
 .term-val .unit { color: var(--text-dim); font-size: 11px; margin-left: 4px; }
 .term-val .delta {
   display: inline-block;
-  margin-left: 10px;
-  padding: 2px 7px;
+  margin-left: 12px;
+  padding: 3px 8px;
   font-size: 10px;
   background: var(--accent-soft);
   color: var(--accent);
-  border: 1px solid var(--accent-soft);
 }
 
-.term-footer {
-  padding: 12px 16px;
+/* CTA */
+.cta-section {
+  padding: 140px 48px;
+  text-align: center;
+  position: relative; overflow: hidden;
   border-top: 1px solid var(--line);
-  color: var(--text-faint);
-  font-size: 10px;
-  display: flex;
-  justify-content: space-between;
-  background: rgba(0,0,0,0.3);
 }
-.live-dot {
-  display: inline-block;
-  width: 6px; height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  margin-right: 6px;
-  box-shadow: 0 0 8px var(--accent-glow);
-  animation: pulse 1.5s infinite;
-}
-
-/* === SECTION TITLES === */
-.section {
-  padding: 100px 32px;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-}
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-bottom: 28px;
-  margin-bottom: 56px;
-  border-bottom: 1px solid var(--line);
-}
-.section-label {
+.cta-eyebrow {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  max-width: 800px;
-}
-.section-title em {
-  font-style: italic;
-  color: var(--text-dim);
-  font-weight: 300;
-}
-.section-title .hot { color: var(--accent); font-weight: 600; }
-.section-num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  letter-spacing: 0.1em;
-}
-
-/* === STATS GRID === */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.stat {
-  background: var(--bg);
-  padding: 32px 24px;
-  position: relative;
-  transition: background 0.3s;
-}
-.stat:hover { background: var(--bg-soft); }
-.stat-num {
-  font-family: var(--font-mono);
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.stat-num .accent { color: var(--accent); }
-.stat-num .small { font-size: 24px; color: var(--text-dim); }
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.stat-desc {
-  font-size: 13px;
-  color: var(--text-dim);
-  line-height: 1.5;
-}
-.stat-tag {
-  position: absolute;
-  top: 18px; right: 18px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  padding: 3px 7px;
-  border: 1px solid var(--accent);
-  background: var(--accent-soft);
-}
-
-/* === CASE === */
-.cases-wrap {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.case {
-  background: var(--bg);
-  padding: 40px 36px;
-  display: grid;
-  grid-template-columns: 80px 1fr 2fr 1fr;
-  gap: 32px;
-  align-items: start;
-  transition: background 0.3s;
-  position: relative;
-  cursor: pointer;
-}
-.case:hover { background: var(--bg-soft); }
-.case::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: transparent;
-  transition: background 0.3s;
-}
-.case:hover::before { background: var(--accent); }
-
-.case-num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  letter-spacing: 0.08em;
-  padding-top: 4px;
-}
-.case-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.case-co {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.case-date {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
-  letter-spacing: 0.05em;
-}
-.case-body {
-  font-size: 14px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.case-body strong { color: var(--text); font-weight: 500; }
-.case-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-left: 24px;
-  border-left: 1px solid var(--line);
-}
-.case-metric {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-.case-metric .k { color: var(--text-faint); letter-spacing: 0.08em; }
-.case-metric .v { color: var(--accent); font-weight: 700; font-size: 14px; }
-.case-metric .v.neutral { color: var(--text); }
-
-/* === CALCULATOR === */
-.calc-wrap {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  padding: 48px;
-  position: relative;
-  overflow: hidden;
-}
-.calc-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 80% 50%, var(--accent-soft) 0%, transparent 50%);
-  pointer-events: none;
-}
-.calc-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 60px;
-  align-items: center;
-  position: relative;
-}
-.calc-l {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.calc-question {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 1.3;
-  color: var(--text);
-}
-.calc-question em { color: var(--accent); font-style: italic; }
-.slider-group { display: flex; flex-direction: column; gap: 12px; }
-.slider-label {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.slider-label .val {
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 14px;
-}
-
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 2px;
-  background: var(--line-hot);
-  outline: none;
-  cursor: pointer;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px; height: 14px;
-  background: var(--accent);
-  cursor: pointer;
-  border-radius: 0;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 14px; height: 14px;
-  background: var(--accent);
-  cursor: pointer;
-  border: none;
-  border-radius: 0;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-
-.cpm-presets {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-.cpm-preset {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 5px 10px;
-  background: transparent;
-  border: 1px solid var(--line-hot);
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.05em;
-}
-.cpm-preset:hover, .cpm-preset.active {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.cpm-preset.mine {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.calc-r {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  padding: 36px;
-  font-family: var(--font-mono);
-}
-.result-label {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.result-big {
-  font-size: 64px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.result-unit {
-  font-size: 14px;
-  color: var(--text-dim);
+  font-size: 11px; letter-spacing: 0.22em;
+  color: var(--accent); text-transform: uppercase;
   margin-bottom: 28px;
 }
-.result-vs {
-  border-top: 1px dashed var(--line);
-  padding-top: 18px;
-  font-size: 12px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.result-vs b {
-  color: var(--accent);
-  font-weight: 700;
-}
-.result-bar {
-  margin-top: 16px;
-  height: 6px;
-  background: var(--bg-soft);
-  position: relative;
-  overflow: hidden;
-}
-.result-bar .fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: linear-gradient(90deg, var(--accent) 0%, #7fff00 100%);
-  transition: width 0.4s ease-out;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-
-/* === STACK === */
-.stack {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.stack-col {
-  background: var(--bg);
-  padding: 36px;
-}
-.stack-h {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.stack-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.stack-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--line);
-}
-.stack-name { color: var(--text); }
-.stack-level {
-  display: flex;
-  gap: 3px;
-}
-.stack-level span {
-  width: 16px; height: 4px;
-  background: var(--line-hot);
-}
-.stack-level span.on { background: var(--accent); }
-
-/* === CONTACT === */
-.contact-wrap {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  padding: 80px 60px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.contact-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 100%, var(--accent-soft) 0%, transparent 60%);
-  pointer-events: none;
-}
-.contact-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  position: relative;
-}
-.contact-title {
+.cta-title {
   font-family: var(--font-display);
-  font-size: clamp(40px, 6vw, 80px);
-  font-weight: 300;
-  line-height: 1;
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 300; line-height: 0.95;
   letter-spacing: -0.03em;
-  margin-bottom: 36px;
-  position: relative;
+  margin-bottom: 48px;
+  max-width: 900px;
+  margin-left: auto; margin-right: auto;
 }
-.contact-title em { font-style: italic; color: var(--text-dim); }
-.contact-title .hot { color: var(--accent); font-weight: 600; }
-.contact-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  position: relative;
-}
-.contact-info {
+.cta-title em { font-style: italic; color: var(--text-dim); }
+.cta-title .hot { color: var(--accent); font-weight: 700; }
+.cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.cta-info {
   margin-top: 48px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
-  position: relative;
+  font-size: 12px; color: var(--text-dim);
+  display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
 }
-.contact-info a {
-  color: var(--text);
-  text-decoration: none;
+.cta-info a {
+  color: var(--text); text-decoration: none;
   border-bottom: 1px dashed var(--line-hot);
   padding-bottom: 2px;
   transition: color 0.2s, border-color 0.2s;
 }
-.contact-info a:hover { color: var(--accent); border-color: var(--accent); }
+.cta-info a:hover { color: var(--accent); border-color: var(--accent); }
 
-/* === FOOTER === */
 footer {
-  padding: 32px;
+  padding: 32px 48px;
   border-top: 1px solid var(--line);
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
+  font-size: 10px; color: var(--text-faint);
   letter-spacing: 0.08em;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
 }
 
-/* === FADE IN === */
-.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s, transform 0.7s; }
-.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s, transform 0.8s; }
+.reveal.in { opacity: 1; transform: none; }
 
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; padding: 100px 20px 60px; gap: 40px; }
-  .section { padding: 60px 20px; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .case { grid-template-columns: 1fr; gap: 16px; padding: 28px 24px; }
-  .case-metrics { padding-left: 0; border-left: none; border-top: 1px solid var(--line); padding-top: 16px; }
-  .calc-grid { grid-template-columns: 1fr; gap: 32px; }
-  .calc-wrap { padding: 32px 24px; }
-  .stack { grid-template-columns: 1fr; }
-  .contact-wrap { padding: 50px 28px; }
-  .nav-links { display: none; }
-  nav.topbar { padding: 14px 20px; font-size: 10px; }
-  .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
-  .result-big { font-size: 48px; }
-  footer { flex-direction: column; padding: 24px 20px; }
-}
-
-/* === SECTION TITLES === */
-.section {
-  padding: 100px 32px;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-}
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-bottom: 28px;
-  margin-bottom: 56px;
-  border-bottom: 1px solid var(--line);
-}
-.section-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(36px, 5vw, 64px);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  max-width: 800px;
-}
-.section-title em {
-  font-style: italic;
-  color: var(--text-dim);
-  font-weight: 300;
-}
-.section-title .hot { color: var(--accent); font-weight: 600; }
-.section-num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  letter-spacing: 0.1em;
-}
-
-/* === STATS GRID === */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.stat {
-  background: var(--bg);
-  padding: 32px 24px;
-  position: relative;
-  transition: background 0.3s;
-}
-.stat:hover { background: var(--bg-soft); }
-.stat-num {
-  font-family: var(--font-mono);
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.stat-num .accent { color: var(--accent); }
-.stat-num .small { font-size: 24px; color: var(--text-dim); }
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.stat-desc {
-  font-size: 13px;
-  color: var(--text-dim);
-  line-height: 1.5;
-}
-.stat-tag {
-  position: absolute;
-  top: 18px; right: 18px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  padding: 3px 7px;
-  border: 1px solid var(--accent);
-  background: var(--accent-soft);
-}
-
-/* === CASE === */
-.cases-wrap {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.case {
-  background: var(--bg);
-  padding: 40px 36px;
-  display: grid;
-  grid-template-columns: 80px 1fr 2fr 1fr;
-  gap: 32px;
-  align-items: start;
-  transition: background 0.3s;
-  position: relative;
-  cursor: pointer;
-}
-.case:hover { background: var(--bg-soft); }
-.case::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: transparent;
-  transition: background 0.3s;
-}
-.case:hover::before { background: var(--accent); }
-
-.case-num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  letter-spacing: 0.08em;
-  padding-top: 4px;
-}
-.case-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.case-co {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.case-date {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
-  letter-spacing: 0.05em;
-}
-.case-body {
-  font-size: 14px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.case-body strong { color: var(--text); font-weight: 500; }
-.case-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-left: 24px;
-  border-left: 1px solid var(--line);
-}
-.case-metric {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-.case-metric .k { color: var(--text-faint); letter-spacing: 0.08em; }
-.case-metric .v { color: var(--accent); font-weight: 700; font-size: 14px; }
-.case-metric .v.neutral { color: var(--text); }
-
-/* === CALCULATOR === */
-.calc-wrap {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  padding: 48px;
-  position: relative;
-  overflow: hidden;
-}
-.calc-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 80% 50%, var(--accent-soft) 0%, transparent 50%);
-  pointer-events: none;
-}
-.calc-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 60px;
-  align-items: center;
-  position: relative;
-}
-.calc-l {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.calc-question {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 1.3;
-  color: var(--text);
-}
-.calc-question em { color: var(--accent); font-style: italic; }
-.slider-group { display: flex; flex-direction: column; gap: 12px; }
-.slider-label {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.slider-label .val {
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 14px;
-}
-
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 2px;
-  background: var(--line-hot);
-  outline: none;
-  cursor: pointer;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px; height: 14px;
-  background: var(--accent);
-  cursor: pointer;
-  border-radius: 0;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 14px; height: 14px;
-  background: var(--accent);
-  cursor: pointer;
-  border: none;
-  border-radius: 0;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-
-.cpm-presets {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-.cpm-preset {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 5px 10px;
-  background: transparent;
-  border: 1px solid var(--line-hot);
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.05em;
-}
-.cpm-preset:hover, .cpm-preset.active {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.cpm-preset.mine {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.calc-r {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  padding: 36px;
-  font-family: var(--font-mono);
-}
-.result-label {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.result-big {
-  font-size: 64px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.result-unit {
-  font-size: 14px;
-  color: var(--text-dim);
-  margin-bottom: 28px;
-}
-.result-vs {
-  border-top: 1px dashed var(--line);
-  padding-top: 18px;
-  font-size: 12px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-.result-vs b {
-  color: var(--accent);
-  font-weight: 700;
-}
-.result-bar {
-  margin-top: 16px;
-  height: 6px;
-  background: var(--bg-soft);
-  position: relative;
-  overflow: hidden;
-}
-.result-bar .fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: linear-gradient(90deg, var(--accent) 0%, #7fff00 100%);
-  transition: width 0.4s ease-out;
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-
-/* === STACK === */
-.stack {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-.stack-col {
-  background: var(--bg);
-  padding: 36px;
-}
-.stack-h {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.stack-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.stack-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--line);
-}
-.stack-name { color: var(--text); }
-.stack-level {
-  display: flex;
-  gap: 3px;
-}
-.stack-level span {
-  width: 16px; height: 4px;
-  background: var(--line-hot);
-}
-.stack-level span.on { background: var(--accent); }
-
-/* === CONTACT === */
-.contact-wrap {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  padding: 80px 60px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.contact-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 100%, var(--accent-soft) 0%, transparent 60%);
-  pointer-events: none;
-}
-.contact-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  position: relative;
-}
-.contact-title {
-  font-family: var(--font-display);
-  font-size: clamp(40px, 6vw, 80px);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  margin-bottom: 36px;
-  position: relative;
-}
-.contact-title em { font-style: italic; color: var(--text-dim); }
-.contact-title .hot { color: var(--accent); font-weight: 600; }
-.contact-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  position: relative;
-}
-.contact-info {
-  margin-top: 48px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
-  position: relative;
-}
-.contact-info a {
-  color: var(--text);
-  text-decoration: none;
-  border-bottom: 1px dashed var(--line-hot);
-  padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
-}
-.contact-info a:hover { color: var(--accent); border-color: var(--accent); }
-
-/* === FOOTER === */
-footer {
-  padding: 32px;
-  border-top: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
-  letter-spacing: 0.08em;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-/* === FADE IN === */
-.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s, transform 0.7s; }
-.reveal.in { opacity: 1; transform: translateY(0); }
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; padding: 100px 20px 60px; gap: 40px; }
-  .section { padding: 60px 20px; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .case { grid-template-columns: 1fr; gap: 16px; padding: 28px 24px; }
-  .case-metrics { padding-left: 0; border-left: none; border-top: 1px solid var(--line); padding-top: 16px; }
-  .calc-grid { grid-template-columns: 1fr; gap: 32px; }
-  .calc-wrap { padding: 32px 24px; }
-  .stack { grid-template-columns: 1fr; }
-  .contact-wrap { padding: 50px 28px; }
-  .nav-links { display: none; }
-  nav.topbar { padding: 14px 20px; font-size: 10px; }
-  .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
-  .result-big { font-size: 48px; }
-  footer { flex-direction: column; padding: 24px 20px; }
-}
-
-/* === PHOTO === */
-/* ═══ MOBILE ═══════════════════════════════════════════════════════ */
 @media (max-width: 960px) {
   nav.topbar { padding: 14px 20px; }
   .nav-links { display: none; }
-
-  .hero {
-    grid-template-columns: 1fr;
-    min-height: auto;
-    padding: 100px 20px 60px;
-    gap: 40px;
-  }
-  .hero-l {
-    padding: 16px 20px 24px;
-    max-width: 100%;
-  }
-  .hero-term {
-    padding: 0 20px 60px;
-  }
-  .hero h1 { font-size: clamp(44px, 14vw, 80px); }
-
-  .section { padding: 56px 20px; }
+  .boot-grid { grid-template-columns: 1fr; }
+  .boot-center { padding-left: 0; border-left: none; padding-top: 32px; border-top: 1px solid var(--line); }
+  .hero { padding: 100px 20px 60px; }
+  .section { padding: 80px 20px; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .section-title { font-size: clamp(28px, 8vw, 48px); }
-
-  .stats { grid-template-columns: 1.1fr 1fr; }
-  .stat-num { font-size: 36px; }
-
-  .case {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 24px 20px;
-  }
-  .case-metrics {
-    padding-left: 0;
-    border-left: none;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-  }
-
-  .calc-grid { grid-template-columns: 1fr; gap: 28px; }
-  .calc-wrap { padding: 28px 20px; }
-  .result-big { font-size: 44px; }
-
-  .stack { grid-template-columns: 1fr; }
-
-  .contact-wrap { padding: 48px 24px; }
-  .contact-buttons { flex-direction: column; align-items: center; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .metric-num { font-size: 38px; }
+  .pin-cases { height: auto; }
+  .pin-cases-inner { position: relative; height: auto; padding: 60px 20px; display: block; }
+  .pin-cases-content { grid-template-columns: 1fr; gap: 40px; padding: 0; }
+  .pin-stage { min-height: auto; }
+  .case-slide { position: relative; opacity: 1; transform: none; pointer-events: auto; margin-bottom: 80px; }
+  .graph-section { padding: 80px 20px; }
+  .graph-wrap { height: 400px; }
+  .term-section, .cta-section { padding-left: 20px; padding-right: 20px; }
+  footer { padding: 24px 20px; flex-direction: column; }
+  .cta-buttons { flex-direction: column; align-items: center; }
   .btn { width: 100%; justify-content: center; max-width: 320px; }
-
-  footer { padding: 24px 20px; flex-direction: column; gap: 8px; }
+  .hero-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
 }
-
-@media (max-width: 480px) {
-  .hero h1 { font-size: 13vw; }
-  .stats { grid-template-columns: 1fr; }
-  .stat-num { font-size: 40px; }
-  .calc-question { font-size: 22px; }
-}
-
 </style>
 </head>
 <body>
 
-<!-- BOOT -->
-<div class="boot" id="boot">
-  <div class="boot-inner">
-    <div class="boot-line">&gt; OPERATOR_FILE.init — loading candidate profile...</div>
-    <div class="boot-line">&gt; resolving identity ............. <span style="color:var(--accent)">A. AZYLGAREEV</span></div>
-    <div class="boot-line ok">&gt; profile verified ✓</div>
-    <div class="boot-line">&gt; loading metrics from /content-factory/luxhomme</div>
-    <div class="boot-line">&gt; 1014 placements // 20 creators // 4 months ........ <span style="color:var(--accent)">OK</span></div>
-    <div class="boot-line">&gt; total reach: <span style="color:var(--accent)">9 910 779 views</span></div>
-    <div class="boot-line warn">&gt; NOTE: маркетинг → трафик. нет прямого опыта, но есть цифры.</div>
-    <div class="boot-line ok">&gt; ready. handshake established.</div>
-    <div class="boot-line">&gt; press any key to continue<span class="boot-cursor"></span></div>
+<div id="boot">
+  <div class="boot-corner boot-tl">AZYLGAREEV / OPERATOR FILE</div>
+  <div class="boot-corner boot-tr">● SYSTEM ACTIVE</div>
+  <div class="boot-corner boot-br">v2.7 — build 0518</div>
+
+  <div class="boot-grid">
+    <div class="boot-logs" id="bootLogs"></div>
+    <div class="boot-center">
+      <div class="boot-id">// candidate_profile.init</div>
+      <div class="boot-name">A. <strong>Azylgareev</strong></div>
+      <div class="boot-progress">
+        <div class="boot-bar"><div class="boot-bar-fill" id="bootFill"></div></div>
+        <div class="boot-pct">
+          <span id="bootStatus">/ initializing</span>
+          <span id="bootPct">0%</span>
+        </div>
+      </div>
+      <button class="boot-skip" onclick="skipBoot()">SKIP →</button>
+    </div>
   </div>
 </div>
 
-<!-- NAV -->
 <nav class="topbar">
-  <div class="brand">
+  <a class="brand" href="index.html">
     <span class="brand-dot"></span>
-    <span>AZYLGAREEV / OPERATOR FILE v2.6</span>
-  </div>
+    <span>AZYLGAREEV / OPERATOR FILE v2.7</span>
+  </a>
   <div class="nav-links">
     <a href="#metrics">МЕТРИКИ</a>
     <a href="cases.html">КЕЙСЫ</a>
     <a href="luxhomme.html">LUXHOMME</a>
-    <a href="#calc">CPM CALC</a>
+    <a href="#graph">ГРАФ</a>
     <a href="#contact">КОНТАКТ</a>
   </div>
   <div class="nav-status">
-    <span class="live-dot"></span>
-    <span>OPEN&nbsp;TO&nbsp;OFFERS</span>
+    <span class="brand-dot"></span>
+    <span>OPEN TO OFFERS</span>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-l">
+  <canvas id="three-canvas"></canvas>
+  <div class="hero-content">
     <div class="hero-meta">
-      <span>RU // KAZAN, REMOTE&nbsp;/&nbsp;RELOCATE</span>
+      <span>RU // KAZAN, REMOTE / RELOCATE</span>
       <span>27 Y.O.</span>
-      <span>PERFORMANCE&nbsp;/&nbsp;TRAFFIC&nbsp;/&nbsp;TEAM&nbsp;LEAD</span>
-      <span>STATUS: OPEN&nbsp;TO&nbsp;OFFERS</span>
+      <span>PERFORMANCE / TRAFFIC / TEAM LEAD</span>
+      <span class="live">● OPEN TO OFFERS</span>
     </div>
-    <h1>
-      <em>результаты</em><br>
-      <span class="hot">цифры</span><br>
-      команды
+
+    <h1 class="kinetic-title">
+      <span class="kinetic-line"><span class="kinetic-word"><em class="dim">performance</em></span></span>
+      <span class="kinetic-line"><span class="kinetic-word"><span class="accent">трафик</span></span></span>
+      <span class="kinetic-line"><span class="kinetic-word">команды</span></span>
     </h1>
+
     <p class="hero-tag">
       4 года в маркетинге: ритейл, девелопмент, агентства, маркетплейсы.
       Последний год — <b>контент-завод luxhomme</b>: 20 видеоавторов, <b>1014 размещений</b>,
@@ -1474,479 +691,643 @@ footer {
       Умею строить команды, считать деньги и доводить проекты до результата.
       Открыт к позициям <b>руководителя</b>, <b>трафик-менеджера</b> или <b>найму с ростом</b>.
     </p>
+
     <div class="hero-cta">
-      <a href="cases.html" class="btn primary">
-        смотреть кейсы
-        <span class="btn-arrow">→</span>
-      </a>
-      <a href="https://t.me/aidarazylgareev" target="_blank" class="btn">
-        написать в tg
-        <span class="btn-arrow">↗</span>
-      </a>
+      <a href="cases.html" class="btn primary">смотреть кейсы <span class="btn-arrow">→</span></a>
+      <a href="https://t.me/aidarazylgareev" target="_blank" class="btn">написать в tg <span class="btn-arrow">↗</span></a>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="hero-bottom-l">
+        <div><span class="accent">●</span> 1014 размещений / 4 месяца / 20 авторов</div>
+        <div>средний CPM 75 ₽ // рынок 250–500 ₽</div>
+      </div>
+      <div class="scroll-hint">
+        <span>SCROLL</span>
+        <div class="scroll-hint-line"></div>
+      </div>
     </div>
   </div>
+</section>
 
-  <!-- HERO RIGHT -->
-  <div class="hero-term">
-<!-- HERO TERMINAL -->
-  <div class="term">
+<section class="section" id="metrics">
+  <div class="section-head reveal">
+    <div>
+      <div class="section-label">01 / live_metrics</div>
+      <h2 class="section-title">ключевые цифры<br><em>за 4 месяца</em> работы</h2>
+    </div>
+    <div class="section-num">// luxhomme — feb to may 2025</div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-cell">
+      <span class="metric-tag">PEAK</span>
+      <div class="metric-num"><span class="accent" data-counter="9.91">0</span><span class="small">M</span></div>
+      <div class="metric-label">total reach</div>
+      <div class="metric-desc">9 910 779 просмотров через 20 видеоавторов в Instagram, TikTok, YouTube и ВК.</div>
+    </div>
+    <div class="metric-cell">
+      <span class="metric-tag">SALES</span>
+      <div class="metric-num"><span class="accent" data-counter="2.78">0</span><span class="small">M ₽</span></div>
+      <div class="metric-label">revenue</div>
+      <div class="metric-desc">2 780 000 ₽ продаж на бюджет 728 500 ₽. Окупаемость с первого месяца.</div>
+    </div>
+    <div class="metric-cell">
+      <span class="metric-tag">ROMI</span>
+      <div class="metric-num"><span class="accent" data-counter="450" data-suffix="%">0</span></div>
+      <div class="metric-label">return on marketing</div>
+      <div class="metric-desc">Каждый вложенный рубль вернулся в виде 5.5 ₽ выручки на маркетплейсах.</div>
+    </div>
+    <div class="metric-cell">
+      <span class="metric-tag">CPM</span>
+      <div class="metric-num">₽<span class="accent" data-counter="75">0</span></div>
+      <div class="metric-label">cost per mille</div>
+      <div class="metric-desc">При рынке инфлюенс-маркетинга 250–500 ₽. В мае — до 35 ₽.</div>
+    </div>
+  </div>
+</section>
+
+<section class="pin-cases" id="cases-section">
+  <div class="pin-cases-inner">
+    <div class="pin-cases-content">
+
+      <div class="pin-left">
+        <div class="pin-progress" id="pinProgress">
+          <div class="pin-progress-step active"></div>
+          <div class="pin-progress-step"></div>
+          <div class="pin-progress-step"></div>
+        </div>
+        <div class="pin-counter">
+          <span class="pin-counter-current" id="pinNum">01</span>
+          <span class="pin-counter-total">/ 03</span>
+        </div>
+
+        <div class="pin-stage">
+          <div class="case-slide active" data-slide="0">
+            <div class="pin-co">LUXHOMME · WB / OZON / YM</div>
+            <h3 class="pin-title">Контент-завод с нуля</h3>
+            <div class="pin-period">октябрь 2024 — май 2025 · руководитель направления</div>
+            <p class="pin-desc">
+              Собрал команду из 20 видеоавторов, выстроил процесс производства,
+              разработал систему учёта на 17 листов. <strong>1014 размещений</strong>
+              за 4 месяца принесли <strong>2.78M ₽</strong> выручки на маркетплейсах.
+            </p>
+          </div>
+          <div class="case-slide" data-slide="1">
+            <div class="pin-co">CENTROOMSTROY · ИЖС, Казань</div>
+            <h3 class="pin-title">Перестройка отдела маркетинга</h3>
+            <div class="pin-period">февраль — сентябрь 2025 · руководитель отдела</div>
+            <p class="pin-desc">
+              Команда 6 человек, контекстная реклама в Я.Директ, сквозная аналитика.
+              <strong>CPL −32%, лиды +58%</strong>, ROMI +27%. Открыли новое направление
+              комфорт+ после переориентации позиционирования.
+            </p>
+          </div>
+          <div class="case-slide" data-slide="2">
+            <div class="pin-co">BULANTI · розничная сеть одежды</div>
+            <h3 class="pin-title">Соцсети и маркетплейсы</h3>
+            <div class="pin-period">февраль 2023 — январь 2025 · руководитель отдела</div>
+            <p class="pin-desc">
+              Вырастил отдел с 1 до 11 человек. YouTube до <strong>200K подписчиков</strong>
+              за 3 месяца, ~90M просмотров/мес. Reels охват с 4–5K до 300–400K.
+              Брендовые запросы на МП <strong>×4</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pin-stage">
+        <div class="case-slide active" data-slide="0">
+          <div class="pin-right-stats">
+            <div class="pin-stat"><div class="pin-stat-v">2.78M ₽</div><div class="pin-stat-l">продажи</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">450%</div><div class="pin-stat-l">ROMI</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">9.91M</div><div class="pin-stat-l">просмотров</div></div>
+            <div class="pin-stat"><div class="pin-stat-v neutral">204</div><div class="pin-stat-l">заказа</div></div>
+            <div class="pin-stat"><div class="pin-stat-v neutral">1 014</div><div class="pin-stat-l">размещений</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">75 ₽</div><div class="pin-stat-l">средний CPM</div></div>
+          </div>
+        </div>
+        <div class="case-slide" data-slide="1">
+          <div class="pin-right-stats">
+            <div class="pin-stat"><div class="pin-stat-v">−32%</div><div class="pin-stat-l">CPL</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">+58%</div><div class="pin-stat-l">лиды</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">+27%</div><div class="pin-stat-l">ROMI</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">3.1%</div><div class="pin-stat-l">CR кампаний</div></div>
+            <div class="pin-stat"><div class="pin-stat-v neutral">6 чел.</div><div class="pin-stat-l">команда</div></div>
+            <div class="pin-stat"><div class="pin-stat-v" style="font-size:24px">комфорт+</div><div class="pin-stat-l">новое направление</div></div>
+          </div>
+        </div>
+        <div class="case-slide" data-slide="2">
+          <div class="pin-right-stats">
+            <div class="pin-stat"><div class="pin-stat-v">200K</div><div class="pin-stat-l">YouTube за 3 мес</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">~90M</div><div class="pin-stat-l">просмотров/мес</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">×60-80</div><div class="pin-stat-l">Reels охват</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">×4</div><div class="pin-stat-l">бренд на МП</div></div>
+            <div class="pin-stat"><div class="pin-stat-v neutral">1→11</div><div class="pin-stat-l">команда</div></div>
+            <div class="pin-stat"><div class="pin-stat-v">+9 234</div><div class="pin-stat-l">CRM база</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="graph-section reveal" id="graph">
+  <div class="section-head">
+    <div>
+      <div class="section-label">02 / network_map</div>
+      <h2 class="section-title">карта <em>показателей</em><br>наведи на <span class="hot">узлы</span></h2>
+    </div>
+    <div class="section-num">// interactive</div>
+  </div>
+
+  <div class="graph-wrap">
+    <canvas id="graph-canvas"></canvas>
+    <div class="graph-tooltip" id="graphTip">
+      <div class="gt-label" id="gtLabel">label</div>
+      <div class="gt-val" id="gtVal">value</div>
+      <div class="gt-note" id="gtNote">note</div>
+    </div>
+    <div class="graph-hint">наведи курсор на точку</div>
+    <div class="graph-legend">
+      <span>● размер = вес</span>
+      <span>— связи между метриками</span>
+    </div>
+  </div>
+</section>
+
+<section class="term-section">
+  <div class="section-head reveal" style="max-width:1400px;margin:0 auto 64px;">
+    <div>
+      <div class="section-label">03 / dashboard_export</div>
+      <h2 class="section-title">контент-завод<br><em>в одной</em> <span class="hot">сводке</span></h2>
+    </div>
+    <div class="section-num">// content_factory.log</div>
+  </div>
+
+  <div class="terminal reveal">
     <div class="term-head">
       <span>luxhomme — content-factory_dashboard</span>
       <div class="term-dots"><span></span><span></span><span></span></div>
     </div>
     <div class="term-body">
-      <div class="term-row">
-        <div class="term-key">period</div>
-        <div class="term-val">февраль — май <span class="unit">2025</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">placements</div>
-        <div class="term-val"><span class="big">1014</span> <span class="unit">postings</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">creators</div>
-        <div class="term-val"><span class="big">20</span> <span class="unit">in&nbsp;active&nbsp;rotation</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">total reach</div>
-        <div class="term-val"><span class="big">9.91M</span> <span class="unit">views</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">budget</div>
-        <div class="term-val"><span class="big">730K</span> <span class="unit">₽</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">avg CPM</div>
-        <div class="term-val"><span class="big">72</span> <span class="unit">₽</span> <span class="delta">market: 250–500₽</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">best month</div>
-        <div class="term-val">may — <span class="big" style="font-size:18px">35</span><span class="unit">₽ CPM</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">sales</div>
-        <div class="term-val"><span class="big">2.78M</span> <span class="unit">₽</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">orders</div>
-        <div class="term-val"><span class="big">204</span> <span class="unit">заказа</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">ROMI</div>
-        <div class="term-val"><span class="big">450</span> <span class="unit">%</span> <span class="delta">505K ₽ → 2.78M ₽</span></div>
-      </div>
-      <div class="term-row">
-        <div class="term-key">товары</div>
-        <div class="term-val">бытовая техника&nbsp;/&nbsp;аксессуары</div>
-      </div>
-    </div>
-    <div class="term-footer">
-      <span><span class="live-dot"></span>data updated 13.05.2025</span>
-      <span>source: ops dashboard</span>
-    </div>
-  </div>
-  </div>
-
-</section>
-
-<!-- METRICS -->
-<section class="section" id="metrics">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">01 / numbers first</div>
-      <h2 class="section-title">
-        числа, которые я <em>получил</em><br>за <span class="hot">4 месяца работы</span>
-      </h2>
-    </div>
-    <div class="section-num">// metrics.json</div>
-  </div>
-
-  <div class="stats reveal">
-    <div class="stat">
-      <span class="stat-tag">PEAK</span>
-      <div class="stat-num"><span class="accent">9.91</span><span class="small">M</span></div>
-      <div class="stat-label">total views</div>
-      <div class="stat-desc">9 910 779 просмотров за 4 месяца через видеоавторов в Instagram, TikTok, YouTube и ВКонтакте.</div>
-    </div>
-    <div class="stat">
-      <span class="stat-tag">КЛЮЧ</span>
-      <div class="stat-num">₽<span class="accent">72</span></div>
-      <div class="stat-label">avg CPM (weighted)</div>
-      <div class="stat-desc">Рыночная стоимость такого размещения — 250–500 ₽ за 1000 показов. Средний результат за 4 месяца — 72 ₽.</div>
-    </div>
-    <div class="stat">
-      <span class="stat-tag">REC</span>
-      <div class="stat-num">₽<span class="accent">35</span></div>
-      <div class="stat-label">may 2025 cpm</div>
-      <div class="stat-desc">Май: 54 000 ₽ бюджета, 1.52M просмотров, 12 заказов, 226 000 ₽ продаж. CPM 35 ₽.</div>
-    </div>
-    <div class="stat">
-      <span class="stat-tag">SCALE</span>
-      <div class="stat-num"><span class="accent">1014</span></div>
-      <div class="stat-label">placements run</div>
-      <div class="stat-desc">20 авторов, 4 площадки, 9 товаров. Для каждого размещения — ТЗ, договор, акт, отчёт.</div>
+      <div class="term-row"><div class="term-key">period</div><div class="term-val">февраль — май <span class="unit">2025</span></div></div>
+      <div class="term-row"><div class="term-key">placements</div><div class="term-val"><span class="big">1014</span> <span class="unit">postings</span></div></div>
+      <div class="term-row"><div class="term-key">creators</div><div class="term-val"><span class="big">20</span> <span class="unit">in active rotation</span></div></div>
+      <div class="term-row"><div class="term-key">total reach</div><div class="term-val"><span class="big">9.91M</span> <span class="unit">views</span></div></div>
+      <div class="term-row"><div class="term-key">budget</div><div class="term-val"><span class="big">728K</span> <span class="unit">₽</span></div></div>
+      <div class="term-row"><div class="term-key">sales</div><div class="term-val"><span class="big">2.78M</span> <span class="unit">₽</span></div></div>
+      <div class="term-row"><div class="term-key">ROMI</div><div class="term-val"><span class="big">450</span> <span class="unit">%</span> <span class="delta">728K → 2.78M</span></div></div>
+      <div class="term-row"><div class="term-key">avg CPM</div><div class="term-val"><span class="big">75</span> <span class="unit">₽</span> <span class="delta">рынок: 250–500₽</span></div></div>
+      <div class="term-row"><div class="term-key">best CPM</div><div class="term-val">май — <span class="big" style="font-size:18px">35</span><span class="unit"> ₽</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- CASES -->
-<section class="section" id="cases">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">02 / case files</div>
-      <h2 class="section-title">
-        опыт и <em>результаты</em><br>по <span class="hot">местам работы</span>
-      </h2>
-    </div>
-    <div class="section-num">// /work_history</div>
+<section class="cta-section reveal" id="contact">
+  <div class="cta-eyebrow">// signal_ready</div>
+  <h2 class="cta-title">готов <em>обсудить</em><br><span class="hot">вашу задачу</span></h2>
+  <div class="cta-buttons">
+    <a href="https://t.me/aidarazylgareev" target="_blank" class="btn primary">написать в telegram <span class="btn-arrow">↗</span></a>
+    <a href="mailto:aidarazylgareev15@gmail.com" class="btn">e-mail <span class="btn-arrow">↗</span></a>
   </div>
-
-  <div class="cases-wrap">
-
-    <article class="case reveal">
-      <div class="case-num">CASE_01<br><span style="color:var(--accent)">●</span> ACTIVE</div>
-      <div>
-        <div class="case-co">LUXHOMME × WB / OZON / YM</div>
-        <div class="case-title">Контент-завод: с нуля до 9.9M просмотров</div>
-        <div class="case-date">2024 — 2025  //  руководитель направления</div>
-      </div>
-      <div class="case-body">
-        С нуля собрал команду из 20 видеоавторов и выстроил процесс: подбор, ТЗ, договоры, оплаты, отчётность.
-        Разработал таблицу учёта на 17 связанных листов — она считает CPM, CPC, ROMI и ДРР
-        по каждому размещению и сводит всё в один дашборд.
-        Тестировал авторов и площадки, убирал тех, кто не окупается, перераспределял бюджет.
-        За 4 месяца: <strong>505 000 ₽ вложено → 2 780 000 ₽ продаж → ROMI 450%</strong>.
-      </div>
-      <div class="case-metrics">
-        <div class="case-metric"><span class="k">REACH</span><span class="v">9.91M</span></div>
-        <div class="case-metric"><span class="k">CPM</span><span class="v">72₽</span></div>
-        <div class="case-metric"><span class="k">BEST&nbsp;CPM</span><span class="v">35₽</span></div>
-        <div class="case-metric"><span class="k">CREATORS</span><span class="v neutral">20</span></div>
-        <div class="case-metric"><span class="k">PLACEMENTS</span><span class="v neutral">1014</span></div>
-      </div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-num">CASE_02</div>
-      <div>
-        <div class="case-co">CENTROOMSTROY</div>
-        <div class="case-title">Performance в ИЖС: CPL минус 32%</div>
-        <div class="case-date">фев — сен 2025  //  руководитель отдела маркетинга</div>
-      </div>
-      <div class="case-body">
-        Руководил отделом из 6 человек и подрядчиков.
-        Перенастроил контекстную рекламу в Яндекс.Директ, поставил сквозную аналитику,
-        начал перераспределять бюджет по реальным данным каналов.
-        Результат за полгода: <strong>CPL −32%, количество лидов +58%, конверсия кампаний 1.8% → 3.1%, ROMI +27%</strong>.
-      </div>
-      <div class="case-metrics">
-        <div class="case-metric"><span class="k">CPL</span><span class="v">−32%</span></div>
-        <div class="case-metric"><span class="k">LEADS</span><span class="v">+58%</span></div>
-        <div class="case-metric"><span class="k">CR&nbsp;кампаний</span><span class="v">1.8 → 3.1%</span></div>
-        <div class="case-metric"><span class="k">ROMI</span><span class="v">+27%</span></div>
-      </div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-num">CASE_03</div>
-      <div>
-        <div class="case-co">BULANTI.SHOP</div>
-        <div class="case-title">CRM × Telegram-бот × Маркетплейсы</div>
-        <div class="case-date">2023 — 2024  //  руководитель отдела маркетинга</div>
-      </div>
-      <div class="case-body">
-        Настроил связку CRM + сайт + Telegram-бот + маркетплейсы через API и вебхуки.
-        Сделал механику перевода покупателей с WB и Ozon в собственный Telegram-канал — через QR-коды на бирках и воронки в боте.
-        Разработал систему уровней лояльности, продюсировал ролики, вёл CRM-рассылки.
-        Результат: <strong>Open Rate 88%, Click Rate 29%, конверсия 3.2%</strong>, база выросла на <strong>+9 234 подписчика</strong>.
-      </div>
-      <div class="case-metrics">
-        <div class="case-metric"><span class="k">OR</span><span class="v">88%</span></div>
-        <div class="case-metric"><span class="k">CTR</span><span class="v">29%</span></div>
-        <div class="case-metric"><span class="k">CR</span><span class="v">3.2%</span></div>
-        <div class="case-metric"><span class="k">БАЗА&nbsp;+</span><span class="v">9 234</span></div>
-      </div>
-    </article>
-
-    <article class="case reveal">
-      <div class="case-num">CASE_04</div>
-      <div>
-        <div class="case-co">РЕАСПЕКТ // ДРУГ МЕДИА</div>
-        <div class="case-title">Агентский опыт: контекст, таргет, SEO</div>
-        <div class="case-date">2022 — 2023  //  project manager / руководитель проектов</div>
-      </div>
-      <div class="case-body">
-        Вёл несколько клиентских проектов параллельно: контекстная реклама, таргет, SEO, аналитика.
-        Распределял бюджеты, отчитывался по KPI, общался с клиентами.
-        Работал в двух агентствах одновременно — Реаспект и Друг Медиа.
-      </div>
-      <div class="case-metrics">
-        <div class="case-metric"><span class="k">КЛИЕНТЫ</span><span class="v neutral">пул B2B</span></div>
-        <div class="case-metric"><span class="k">КОМАНДА</span><span class="v neutral">проектная</span></div>
-        <div class="case-metric"><span class="k">КАНАЛЫ</span><span class="v neutral">PPC&nbsp;/&nbsp;SMM&nbsp;/&nbsp;SEO</span></div>
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<!-- CALC -->
-<section class="section" id="calc">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">03 / put a number on it</div>
-      <h2 class="section-title">
-        посчитайте сами:<br>во сколько <span class="hot">обойдётся такой охват</span>
-      </h2>
-    </div>
-    <div class="section-num">// cpm_calc.exe</div>
-  </div>
-
-  <div class="calc-wrap reveal">
-    <div class="calc-grid">
-      <div class="calc-l">
-        <div class="calc-question">
-          Задайте нужный охват и CPM —<br>
-          калькулятор покажет разницу в бюджете.
-        </div>
-
-        <div class="slider-group">
-          <div class="slider-label">
-            <span>целевой охват</span>
-            <span><span class="val" id="reachVal">10.0</span> M views</span>
-          </div>
-          <input type="range" id="reachSlider" min="1" max="50" value="10" step="0.5">
-        </div>
-
-        <div class="slider-group">
-          <div class="slider-label">
-            <span>CPM (₽ за 1000 показов)</span>
-            <span><span class="val" id="cpmVal">250</span> ₽</span>
-          </div>
-          <input type="range" id="cpmSlider" min="35" max="700" value="250" step="5">
-          <div class="cpm-presets">
-            <button class="cpm-preset mine" data-cpm="35">я в мае: 35₽</button>
-            <button class="cpm-preset mine" data-cpm="72">мой средний: 72₽</button>
-            <button class="cpm-preset" data-cpm="250">рынок UGC: 250₽</button>
-            <button class="cpm-preset" data-cpm="500">блогеры топ: 500₽</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="calc-r">
-        <div class="result-label">бюджет</div>
-        <div class="result-big" id="resultBudget">₽ 2 500 000</div>
-        <div class="result-unit" id="resultUnit">на 10.0M просмотров при CPM 250₽</div>
-        <div class="result-vs">
-          у меня <b>9.91M просмотров</b> стоили <b>730 000 ₽</b>.<br>
-          сэкономлено относительно вашей вводной: <b id="resultDiff">≈ 1.77M ₽</b>
-          <div class="result-bar"><div class="fill" id="resultBar" style="width:30%"></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- STACK -->
-<section class="section" id="stack">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-label">04 / toolkit</div>
-      <h2 class="section-title">
-        что умею <em>сейчас</em><br>и что <span class="hot">изучаю</span>
-      </h2>
-    </div>
-    <div class="section-num">// stack.cfg</div>
-  </div>
-
-  <div class="stack reveal">
-    <div class="stack-col">
-      <div class="stack-h">// работаю с этим</div>
-      <div class="stack-list">
-        <div class="stack-item">
-          <span class="stack-name">Performance: контекст (Я.Директ)</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Работа с видеоавторами и блогерами</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Аналитика: CPM, CPC, CPL, CR, ROMI, ДРР</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Управление командой (до 12 чел.)</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">CRM-маркетинг, Telegram-боты, API/Webhooks</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Креативные ТЗ, продюсирование съёмок</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Аналитика Excel (формулы, сводные, dashboards)</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="stack-col">
-      <div class="stack-h">// изучаю сейчас</div>
-      <div class="stack-list">
-        <div class="stack-item">
-          <span class="stack-name">Facebook / Meta Ads</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">TikTok Ads</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Антидетект (Octo / AdsPower)</span>
-          <span class="stack-level"><span class="on"></span><span></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Трекеры (Keitaro и аналоги)</span>
-          <span class="stack-level"><span class="on"></span><span></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Связки, преленды, спай-сервисы</span>
-          <span class="stack-level"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Фарм и работа с аккаунтами</span>
-          <span class="stack-level"><span class="on"></span><span></span><span></span><span></span><span></span></span>
-        </div>
-        <div class="stack-item">
-          <span class="stack-name">Вертикали: iGaming / Crypto / Nutra</span>
-          <span class="stack-level"><span class="on"></span><span></span><span></span><span></span><span></span></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section class="section" id="contact">
-  <div class="contact-wrap reveal">
-    <div class="contact-eyebrow">// signal_ready.exe</div>
-    <h2 class="contact-title">
-      готов <em>обсудить</em><br>
-      <span class="hot">вашу задачу</span>
-    </h2>
-    <div class="contact-buttons">
-      <a href="https://t.me/aidarazylgareev" target="_blank" class="btn primary">
-        написать в telegram
-        <span class="btn-arrow">↗</span>
-      </a>
-      <a href="mailto:aidarazylgareev15@gmail.com" class="btn">
-        e-mail
-        <span class="btn-arrow">↗</span>
-      </a>
-    </div>
-    <div class="contact-info">
-      <span>+7&nbsp;(987)&nbsp;216&#8209;51&#8209;61</span>
-      <a href="https://t.me/aidarazylgareev" target="_blank">@aidarazylgareev</a>
-      <a href="mailto:aidarazylgareev15@gmail.com">aidarazylgareev15@gmail.com</a>
-    </div>
+  <div class="cta-info">
+    <span>+7 (987) 216-51-61</span>
+    <a href="https://t.me/aidarazylgareev" target="_blank">@aidarazylgareev</a>
+    <a href="mailto:aidarazylgareev15@gmail.com">aidarazylgareev15@gmail.com</a>
   </div>
 </section>
 
 <footer>
-  <div>&copy; 2026 AIDAR AZYLGAREEV. designed and engineered top-down.</div>
-  <div>OPERATOR FILE v2.6  //  build 0518.alpha</div>
+  <div>© 2026 AIDAR AZYLGAREEV · azylgareev.ru</div>
+  <div>OPERATOR FILE v2.7 // build 0518</div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-// === BOOT ===
-window.addEventListener('load', () => {
+// BOOT LOADER
+const BOOT_LINES = [
+  { t: '/ initializing system', d: 100 },
+  { t: '/ loading candidate_profile.dat', d: 80 },
+  { t: '/ resolving identity ............. A. AZYLGAREEV', d: 90 },
+  { t: '/ profile verified', d: 100, cls: 'ok' },
+  { t: '/ connecting to /content-factory/luxhomme', d: 120 },
+  { t: '/ syncing metrics: 1014 placements', d: 80 },
+  { t: '/ reach: 9 910 779 views', d: 80, cls: 'hot' },
+  { t: '/ budget: 728 500 ₽ → sales: 2 780 000 ₽', d: 90 },
+  { t: '/ ROMI: 450%', d: 80, cls: 'hot' },
+  { t: '/ avg CPM: 75 ₽ (market: 250–500 ₽)', d: 80 },
+  { t: '/ NOTE: маркетинг → трафик. unit-economics ready.', d: 100, cls: 'warn' },
+  { t: '/ team: 20 creators, 6 → 11 people managed', d: 80 },
+  { t: '/ tools: я.директ, CRM, telegram API, аналитика', d: 80 },
+  { t: '/ stack verified', d: 80, cls: 'ok' },
+  { t: '/ rendering hero scene', d: 100 },
+  { t: '/ system ready', d: 80, cls: 'ok' },
+];
+const STATUSES = ['/ initializing', '/ loading profile', '/ verifying', '/ syncing metrics', '/ compiling cases', '/ rendering scene', '/ ready'];
+
+let bootDone = false;
+function runBoot() {
+  const logsBox = document.getElementById('bootLogs');
+  const fill = document.getElementById('bootFill');
+  const pct = document.getElementById('bootPct');
+  const status = document.getElementById('bootStatus');
+  let i = 0;
+
+  function next() {
+    if (i >= BOOT_LINES.length || bootDone) {
+      if (!bootDone) finishBoot();
+      return;
+    }
+    const item = BOOT_LINES[i];
+    const div = document.createElement('div');
+    div.className = 'boot-log';
+    if (item.cls) div.classList.add(item.cls);
+    div.textContent = item.t;
+    logsBox.appendChild(div);
+    while (logsBox.children.length > 14) logsBox.removeChild(logsBox.firstChild);
+    setTimeout(() => div.classList.add('in'), 20);
+
+    const prog = Math.round((i + 1) / BOOT_LINES.length * 100);
+    fill.style.width = prog + '%';
+    pct.textContent = prog + '%';
+    status.textContent = STATUSES[Math.floor((i / BOOT_LINES.length) * STATUSES.length)] || STATUSES[STATUSES.length-1];
+
+    i++;
+    setTimeout(next, item.d + 40);
+  }
+  next();
+}
+
+function finishBoot() {
+  bootDone = true;
   setTimeout(() => {
     document.getElementById('boot').classList.add('done');
-  }, 2300);
-});
-document.addEventListener('keydown', () => document.getElementById('boot').classList.add('done'));
-document.addEventListener('click', () => document.getElementById('boot').classList.add('done'));
+    document.querySelector('nav.topbar').classList.add('in');
+    setTimeout(animateKineticTitle, 100);
+  }, 500);
+}
 
-// === REVEAL ON SCROLL ===
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-      io.unobserve(e.target);
+function skipBoot() {
+  if (bootDone) return;
+  bootDone = true;
+  document.getElementById('boot').classList.add('done');
+  document.querySelector('nav.topbar').classList.add('in');
+  setTimeout(animateKineticTitle, 100);
+}
+window.skipBoot = skipBoot;
+
+// KINETIC TITLE
+function animateKineticTitle() {
+  document.querySelectorAll('.kinetic-line').forEach((line, i) => {
+    setTimeout(() => line.classList.add('in'), i * 150);
+  });
+}
+
+// THREE.JS
+let scene, camera, renderer, ring, blocks = [];
+let mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+
+function initThree() {
+  if (typeof THREE === 'undefined') { console.warn('THREE not loaded'); return; }
+  const canvas = document.getElementById('three-canvas');
+  const w = canvas.parentElement.offsetWidth;
+  const h = canvas.parentElement.offsetHeight;
+
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x050505, 0.04);
+
+  camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100);
+  camera.position.set(0, 0, 14);
+
+  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  ring = new THREE.Group();
+  const COUNT = 60;
+  const R = 6;
+
+  for (let i = 0; i < COUNT; i++) {
+    const angle = (i / COUNT) * Math.PI * 2;
+    const size = 0.18 + Math.random() * 0.4;
+    const geometry = new THREE.BoxGeometry(size, size, size);
+    const isBright = Math.random() > 0.55;
+    const color = isBright ? 0xc6ff00 : 0x223300;
+    const material = new THREE.MeshBasicMaterial({
+      color, transparent: true,
+      opacity: isBright ? 0.85 : 0.3,
+    });
+    const block = new THREE.Mesh(geometry, material);
+    const radius = R + (Math.random() - 0.5) * 1.5;
+    block.position.x = Math.cos(angle) * radius;
+    block.position.y = Math.sin(angle) * radius * 0.4;
+    block.position.z = (Math.random() - 0.5) * 3;
+    block.userData = {
+      angle, radius,
+      orbitSpeed: 0.0005 + Math.random() * 0.002,
+      rotSpeed: { x: (Math.random()-0.5)*0.02, y: (Math.random()-0.5)*0.02 },
+      bright: isBright,
+      pulsePhase: Math.random() * Math.PI * 2,
+    };
+    ring.add(block);
+    blocks.push(block);
+  }
+  scene.add(ring);
+
+  // Background particles
+  const pGeo = new THREE.BufferGeometry();
+  const pCount = 200;
+  const pos = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount; i++) {
+    pos[i*3] = (Math.random() - 0.5) * 30;
+    pos[i*3+1] = (Math.random() - 0.5) * 20;
+    pos[i*3+2] = (Math.random() - 0.5) * 20 - 5;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0xc6ff00, size: 0.04, transparent: true, opacity: 0.5 });
+  scene.add(new THREE.Points(pGeo, pMat));
+
+  window.addEventListener('mousemove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouse.tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    mouse.ty = -((e.clientY - r.top) / r.height - 0.5) * 2;
+  });
+  window.addEventListener('resize', onThreeResize);
+  animateThree();
+}
+
+function onThreeResize() {
+  if (!renderer) return;
+  const canvas = document.getElementById('three-canvas');
+  const w = canvas.parentElement.offsetWidth;
+  const h = canvas.parentElement.offsetHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+
+let t = 0;
+function animateThree() {
+  requestAnimationFrame(animateThree);
+  t += 0.01;
+  mouse.x += (mouse.tx - mouse.x) * 0.06;
+  mouse.y += (mouse.ty - mouse.y) * 0.06;
+  ring.rotation.y = t * 0.1 + mouse.x * 0.5;
+  ring.rotation.x = mouse.y * 0.3;
+  blocks.forEach((b) => {
+    b.userData.angle += b.userData.orbitSpeed;
+    const r = b.userData.radius;
+    b.position.x = Math.cos(b.userData.angle) * r;
+    b.position.y = Math.sin(b.userData.angle) * r * 0.4;
+    b.rotation.x += b.userData.rotSpeed.x;
+    b.rotation.y += b.userData.rotSpeed.y;
+    if (b.userData.bright) {
+      b.material.opacity = 0.7 + Math.sin(t * 2 + b.userData.pulsePhase) * 0.3;
     }
   });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-// === CALCULATOR ===
-const reachSlider = document.getElementById('reachSlider');
-const cpmSlider = document.getElementById('cpmSlider');
-const reachVal = document.getElementById('reachVal');
-const cpmVal = document.getElementById('cpmVal');
-const resultBudget = document.getElementById('resultBudget');
-const resultUnit = document.getElementById('resultUnit');
-const resultDiff = document.getElementById('resultDiff');
-const resultBar = document.getElementById('resultBar');
-
-function fmt(n) {
-  return Math.round(n).toLocaleString('ru-RU').replace(/,/g, ' ');
+  renderer.render(scene, camera);
 }
 
-function fmtM(n) {
-  if (n >= 1000000) return (n/1000000).toFixed(2) + 'M';
-  if (n >= 1000) return (n/1000).toFixed(0) + 'K';
-  return n.toFixed(0);
+// COUNTERS
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.counter);
+  const suffix = el.dataset.suffix || '';
+  const isFloat = target % 1 !== 0;
+  const duration = 1800;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = target * eased;
+    el.textContent = (isFloat ? val.toFixed(2) : Math.round(val)) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = (isFloat ? target.toFixed(2) : target) + suffix;
+  }
+  requestAnimationFrame(tick);
 }
 
-function update() {
-  const reach = parseFloat(reachSlider.value); // M
-  const cpm = parseInt(cpmSlider.value);
-  reachVal.textContent = reach.toFixed(1);
-  cpmVal.textContent = cpm;
+// PIN-SCROLL
+function initPinScroll() {
+  const section = document.getElementById('cases-section');
+  if (window.innerWidth <= 960) return;
+  const slides = section.querySelectorAll('.case-slide');
+  const totalSlides = 3;
+  const pinNum = document.getElementById('pinNum');
+  const steps = document.querySelectorAll('.pin-progress-step');
 
-  const budget = reach * 1000 * cpm; // reach in M → views, * cpm/1000 → spent
-  resultBudget.textContent = '₽ ' + fmt(budget);
-  resultUnit.textContent = 'на ' + reach.toFixed(1) + 'M просмотров при CPM ' + cpm + '₽';
+  function update() {
+    const rect = section.getBoundingClientRect();
+    const total = section.offsetHeight - window.innerHeight;
+    if (total <= 0) return;
+    let progress = -rect.top / total;
+    progress = Math.max(0, Math.min(0.999, progress));
+    const slideIdx = Math.min(totalSlides - 1, Math.floor(progress * totalSlides));
 
-  // мой бенчмарк: 9.91M @ 72₽ = 713 520 ₽; округляем к 730K из источника
-  const myCpm = 73.66; // 730000 / 9910 = 73.66
-  const myBudget = reach * 1000 * myCpm;
-  const diff = budget - myBudget;
-  if (diff > 0) {
-    resultDiff.textContent = '≈ ' + fmt(diff) + ' ₽ (' + Math.round((diff / budget) * 100) + '% сверху)';
-    resultDiff.style.color = 'var(--accent)';
-  } else if (diff < 0) {
-    resultDiff.textContent = 'вы дешевле меня на ' + fmt(-diff) + ' ₽';
-    resultDiff.style.color = 'var(--text-dim)';
-  } else {
-    resultDiff.textContent = 'паритет с моим бенчмарком';
-    resultDiff.style.color = 'var(--text)';
+    slides.forEach((s) => {
+      s.classList.toggle('active', parseInt(s.dataset.slide) === slideIdx);
+    });
+    pinNum.textContent = '0' + (slideIdx + 1);
+    steps.forEach((step, i) => {
+      step.classList.remove('done', 'active');
+      if (i < slideIdx) step.classList.add('done');
+      else if (i === slideIdx) step.classList.add('active');
+    });
+  }
+  window.addEventListener('scroll', update);
+  update();
+}
+
+// INTERACTIVE GRAPH
+function initGraph() {
+  const canvas = document.getElementById('graph-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const tip = document.getElementById('graphTip');
+  const tipL = document.getElementById('gtLabel');
+  const tipV = document.getElementById('gtVal');
+  const tipN = document.getElementById('gtNote');
+
+  const wrap = canvas.parentElement;
+  let W, H;
+
+  function resize() {
+    W = wrap.offsetWidth;
+    H = wrap.offsetHeight;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const NODES = [
+    { x: 0.18, y: 0.30, r: 22, label: 'reach',     val: '9.91M',   note: 'просмотров за 4 месяца' },
+    { x: 0.42, y: 0.55, r: 38, label: 'sales',     val: '2.78M ₽', note: 'выручка с маркетплейсов' },
+    { x: 0.70, y: 0.25, r: 28, label: 'romi',      val: '450%',    note: 'возврат на маркетинг' },
+    { x: 0.85, y: 0.62, r: 18, label: 'cpm',       val: '75 ₽',    note: 'при рынке 250–500 ₽' },
+    { x: 0.55, y: 0.18, r: 14, label: 'orders',    val: '204',     note: 'заказа на WB + Ozon' },
+    { x: 0.28, y: 0.75, r: 16, label: 'creators',  val: '20',      note: 'видеоавторов' },
+    { x: 0.62, y: 0.82, r: 16, label: 'placements',val: '1014',    note: 'размещений' },
+    { x: 0.92, y: 0.30, r: 12, label: 'best cpm',  val: '35 ₽',    note: 'лучший месяц — май' },
+  ];
+
+  const EDGES = [[0,1],[1,2],[1,3],[0,2],[4,1],[5,0],[6,1],[2,3],[7,3],[5,6],[4,2]];
+
+  let hoveredIdx = -1;
+  let particles = [];
+  for (let i = 0; i < 30; i++) {
+    particles.push({
+      edge: EDGES[Math.floor(Math.random() * EDGES.length)],
+      t: Math.random(),
+      speed: 0.001 + Math.random() * 0.003,
+    });
   }
 
-  // bar: my cpm vs current cpm → ratio
-  const ratio = Math.min(100, (myCpm / cpm) * 100);
-  resultBar.style.width = ratio + '%';
-
-  // preset highlight
-  document.querySelectorAll('.cpm-preset').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.cpm) === cpm);
+  canvas.addEventListener('mousemove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left;
+    const my = e.clientY - r.top;
+    let found = -1;
+    NODES.forEach((n, i) => {
+      const dx = mx - n.x * W;
+      const dy = my - n.y * H;
+      if (Math.sqrt(dx*dx + dy*dy) < n.r + 6) found = i;
+    });
+    if (found >= 0) {
+      hoveredIdx = found;
+      const n = NODES[found];
+      tipL.textContent = n.label;
+      tipV.textContent = n.val;
+      tipN.textContent = n.note;
+      let tx = n.x * W + n.r + 16;
+      let ty = n.y * H - 20;
+      if (tx + 220 > W) tx = n.x * W - 220 - n.r;
+      tip.style.left = tx + 'px';
+      tip.style.top = ty + 'px';
+      tip.classList.add('show');
+      canvas.style.cursor = 'pointer';
+    } else {
+      hoveredIdx = -1;
+      tip.classList.remove('show');
+      canvas.style.cursor = 'default';
+    }
   });
+
+  canvas.addEventListener('mouseleave', () => {
+    hoveredIdx = -1;
+    tip.classList.remove('show');
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    EDGES.forEach(([a, b]) => {
+      const nA = NODES[a], nB = NODES[b];
+      const ax = nA.x * W, ay = nA.y * H;
+      const bx = nB.x * W, by = nB.y * H;
+      const isHot = hoveredIdx === a || hoveredIdx === b;
+      ctx.strokeStyle = isHot ? 'rgba(198,255,0,0.6)' : 'rgba(198,255,0,0.12)';
+      ctx.lineWidth = isHot ? 1.5 : 0.8;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    });
+
+    particles.forEach((p) => {
+      p.t += p.speed;
+      if (p.t > 1) { p.t = 0; p.edge = EDGES[Math.floor(Math.random()*EDGES.length)]; }
+      const [a, b] = p.edge;
+      const nA = NODES[a], nB = NODES[b];
+      const x = (nA.x + (nB.x - nA.x) * p.t) * W;
+      const y = (nA.y + (nB.y - nA.y) * p.t) * H;
+      ctx.fillStyle = 'rgba(198,255,0,0.85)';
+      ctx.beginPath();
+      ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    NODES.forEach((n, i) => {
+      const x = n.x * W, y = n.y * H;
+      const isHot = i === hoveredIdx;
+
+      if (isHot) {
+        const grad = ctx.createRadialGradient(x, y, n.r, x, y, n.r + 40);
+        grad.addColorStop(0, 'rgba(198,255,0,0.5)');
+        grad.addColorStop(1, 'rgba(198,255,0,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, n.r + 40, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = isHot ? '#c6ff00' : 'rgba(198,255,0,0.6)';
+      ctx.lineWidth = isHot ? 2.5 : 1.2;
+      ctx.beginPath();
+      ctx.arc(x, y, n.r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = isHot ? 'rgba(198,255,0,0.18)' : 'rgba(198,255,0,0.04)';
+      ctx.beginPath();
+      ctx.arc(x, y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#c6ff00';
+      ctx.beginPath();
+      ctx.arc(x, y, isHot ? 3.5 : 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = isHot ? '#c6ff00' : 'rgba(255,255,255,0.4)';
+      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(n.label.toUpperCase(), x, y + n.r + 16);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
 }
 
-reachSlider.addEventListener('input', update);
-cpmSlider.addEventListener('input', update);
-document.querySelectorAll('.cpm-preset').forEach(b => {
-  b.addEventListener('click', () => {
-    cpmSlider.value = b.dataset.cpm;
-    update();
-  });
-});
-update();
-</script>
+// REVEAL
+function initReveal() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.classList.contains('metric-cell')) {
+          const counter = e.target.querySelector('[data-counter]');
+          if (counter && !counter.dataset.done) {
+            counter.dataset.done = '1';
+            animateCounter(counter);
+          }
+        }
+        if (e.target.classList.contains('terminal')) {
+          const rows = e.target.querySelectorAll('.term-row');
+          rows.forEach((r, i) => setTimeout(() => r.classList.add('in'), i * 60));
+        }
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  document.querySelectorAll('.metric-cell').forEach(el => io.observe(el));
+}
 
+window.addEventListener('DOMContentLoaded', () => {
+  runBoot();
+  setTimeout(() => { try { initThree(); } catch(e) { console.warn('Three init failed:', e); } }, 200);
+  setTimeout(() => { initReveal(); initPinScroll(); initGraph(); }, 300);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' || e.key === 'Enter') skipBoot();
+});
+</script>
 </body>
 </html>
