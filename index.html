@@ -169,8 +169,36 @@ nav.topbar.in { opacity: 1; transform: none; }
   position: relative; z-index: 2;
   max-width: 1400px; margin: 0 auto; width: 100%;
   pointer-events: none;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
+  align-items: center;
 }
 .hero-content > * { pointer-events: auto; }
+.hero-left{ display:flex; flex-direction:column; }
+.hero-photo{
+  position:relative;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background-size:cover;
+  background-position:center top;
+}
+.hero-photo::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, transparent 50%, rgba(5,5,5,.7) 100%);
+}
+.hero-photo-corners span{position:absolute;width:12px;height:12px;border:1px solid var(--accent);}
+.hero-photo-corners span:nth-child(1){top:8px;left:8px;border-right:none;border-bottom:none;}
+.hero-photo-corners span:nth-child(2){top:8px;right:8px;border-left:none;border-bottom:none;}
+.hero-photo-corners span:nth-child(3){bottom:8px;left:8px;border-right:none;border-top:none;}
+.hero-photo-corners span:nth-child(4){bottom:8px;right:8px;border-left:none;border-top:none;}
+.hero-photo-cap{
+  position:absolute;bottom:14px;left:14px;right:14px;z-index:2;
+  font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.5);
+  display:flex;justify-content:space-between;letter-spacing:.06em;
+}
 .hero-meta {
   font-family: var(--font-mono);
   font-size: 10px; letter-spacing: 0.2em;
@@ -596,100 +624,221 @@ nav.topbar.in { opacity: 1; transform: none; }
 }
 .photo-ph{
   aspect-ratio:4/3;
-  background:var(--bg-card);
+  background-color:var(--bg-card);
+  background-size:cover;
+  background-position:center;
   border:1px solid var(--line);
   position:relative;
   overflow:hidden;
 }
-.photo-ph::before{
+.photo-ph:not([style*="background-image"])::before{
   content:'// IMG_PLACEHOLDER';
   position:absolute;top:14px;left:14px;
   font-family:var(--font-mono);font-size:10px;color:var(--text-faint);letter-spacing:.1em;
   z-index:2;
 }
-.photo-ph::after{
+.photo-ph[style*="background-image"]::after{
   content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(198,255,0,.04), transparent 60%),
-    repeating-linear-gradient(135deg, transparent 0 30px, rgba(255,255,255,.015) 30px 31px);
+  background:linear-gradient(180deg, transparent 50%, rgba(10,10,10,.7) 100%);
 }
 
-/* STATS BOARD (big live dashboard) */
-.stats-board{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg, var(--bg-card) 0%, var(--bg) 100%);
+/* CAREER TIMELINE */
+.career-timeline{
   position:relative;
-  overflow:hidden;
+  padding-bottom:40px;
 }
-.stats-board::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(198,255,0,.06), transparent 50%),
-    radial-gradient(circle at 80% 100%, rgba(78,255,145,.04), transparent 50%);
-}
-.sb-row{display:grid;border-bottom:1px solid var(--line);position:relative;}
-.sb-row:last-of-type{border-bottom:none;}
-.sb-row-hero{grid-template-columns:1.2fr 1fr 0.8fr;}
-.sb-row-mid{grid-template-columns:repeat(4,1fr);}
-.sb-cell{
-  padding:36px 32px;
-  border-right:1px solid var(--line);
+.ct-axis{
   position:relative;
-  transition:background .35s;
+  height:80px;
+  display:flex;
+  align-items:center;
+  margin-bottom:0;
 }
-.sb-cell:last-child{border-right:none;}
-.sb-cell:hover{background:rgba(198,255,0,.025);}
-.sb-cell-big{padding:40px 32px;}
-.sb-mini{
-  font-family:var(--font-mono);font-size:10px;color:var(--text-faint);
-  letter-spacing:.14em;margin-bottom:18px;text-transform:uppercase;
+.ct-axis-line{
+  position:absolute;
+  left:0;right:0;top:50%;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--line-hot) 5%, var(--line-hot) 95%, transparent);
 }
-.sb-big{
-  font-family:var(--font-mono);font-size:64px;font-weight:700;
-  color:var(--accent);line-height:1;letter-spacing:-.04em;
-  margin-bottom:14px;
+.ct-dots{
+  position:relative;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
 }
-.sb-mid{
-  font-family:var(--font-mono);font-size:42px;font-weight:700;
-  color:var(--accent);line-height:1;letter-spacing:-.04em;
+/* точки и метки рендерятся JS */
+.ct-dot{
+  position:absolute;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  cursor:pointer;
+  z-index:2;
+}
+.ct-dot-circle{
+  width:14px;height:14px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  background:var(--bg);
+  transition:all .25s;
+  box-shadow:0 0 0 0 var(--accent-glow);
+  position:relative;
+  z-index:2;
+}
+.ct-dot.active .ct-dot-circle,
+.ct-dot:hover .ct-dot-circle{
+  background:var(--accent);
+  box-shadow:0 0 0 6px rgba(198,255,0,0.2);
+  transform:scale(1.3);
+}
+.ct-dot-year{
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-faint);
+  letter-spacing:.06em;
+  margin-top:10px;
+  white-space:nowrap;
+  transition:color .25s;
+}
+.ct-dot.active .ct-dot-year,
+.ct-dot:hover .ct-dot-year{
+  color:var(--accent);
+}
+.ct-dot-label{
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-muted, #666);
+  letter-spacing:.04em;
   margin-bottom:10px;
+  white-space:nowrap;
+  text-align:center;
+  max-width:120px;
+  line-height:1.3;
+  transition:color .25s;
 }
-.sb-mid span{font-size:30px;color:var(--text-dim);}
-.sb-big span{font-size:34px;color:var(--text-dim);}
-.sb-tag{
-  font-family:var(--font-mono);font-size:11px;color:var(--text-dim);
-  letter-spacing:.04em;line-height:1.5;
+.ct-dot.active .ct-dot-label,
+.ct-dot:hover .ct-dot-label{
+  color:var(--text-dim);
 }
-.sb-bar{
-  margin-top:18px;height:2px;background:var(--line-hot);
-  position:relative;overflow:hidden;
-}
-.sb-bar span{
-  position:absolute;left:0;top:0;height:100%;width:35%;
-  background:linear-gradient(90deg, var(--accent), transparent);
-  animation:sbBar 3.5s infinite ease-in-out;
-}
-@keyframes sbBar{
-  0%{left:-35%;}
-  100%{left:100%;}
-}
-.sb-ticker{
-  padding:18px 0;
-  background:rgba(0,0,0,.4);
-  border-top:1px solid var(--line);
-  font-family:var(--font-mono);font-size:12px;
+/* чередование: нечётные — метка сверху, чётные — снизу */
+.ct-dot.up{flex-direction:column-reverse;}
+.ct-dot.up .ct-dot-year{margin-top:0;margin-bottom:10px;}
+.ct-dot.up .ct-dot-label{margin-bottom:0;margin-top:10px;}
+
+/* карточка */
+.ct-card{
+  margin-top:32px;
+  border:1px solid var(--line);
+  background:var(--bg-card);
   overflow:hidden;
+  max-height:0;
+  opacity:0;
+  transition:max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s, border-color .3s;
+  border-color:transparent;
 }
-.sb-ticker-track{
-  display:flex;gap:48px;white-space:nowrap;
-  animation:sbTicker 50s linear infinite;
-  width:max-content;
+.ct-card.open{
+  max-height:400px;
+  opacity:1;
+  border-color:var(--accent);
 }
-.sb-ticker-track span{color:var(--text-dim);}
-.sb-ticker-track b{color:var(--accent);font-weight:500;margin-right:8px;letter-spacing:.05em;}
-@keyframes sbTicker{
-  from{transform:translateX(0);}
-  to{transform:translateX(-50%);}
+.ct-card-inner{
+  padding:36px 40px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+.ct-card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+.ct-card-co{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.15em;
+  color:var(--accent);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.ct-card-role{
+  font-size:22px;
+  font-weight:500;
+  color:var(--text);
+  line-height:1.2;
+}
+.ct-card-period{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-dim);
+  white-space:nowrap;
+  padding-top:4px;
+}
+.ct-card-desc{
+  font-size:15px;
+  color:var(--text-dim);
+  line-height:1.7;
+  max-width:860px;
+}
+.ct-card-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:4px;
+}
+.ct-tag{
+  padding:4px 10px;
+  border:1px solid var(--line-hot);
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-dim);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.ct-card-link{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--accent);
+  text-decoration:none;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+  transition:gap .2s;
+  width:fit-content;
+}
+.ct-card-link:hover{gap:14px;}
+
+/* mobile timeline */
+@media(max-width:960px){
+  .ct-axis{height:120px;}
+  .ct-dot-label{max-width:80px;font-size:9px;}
+  .ct-card.open{max-height:600px;}
+  .ct-card-inner{padding:24px 22px;}
+  .ct-card-top{flex-direction:column;gap:6px;}
+  .ct-card-role{font-size:18px;}
+}
+@media(max-width:600px){
+  /* на совсем узких экранах таймлайн — вертикальный список */
+  .ct-axis{display:none;}
+  .ct-dots-mobile{display:flex;flex-direction:column;gap:1px;}
+  .ct-mobile-item{
+    padding:18px 22px;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-bottom:none;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  .ct-mobile-item:last-child{border-bottom:1px solid var(--line);}
+  .ct-mobile-item.active{background:var(--bg-soft);border-left:3px solid var(--accent);}
+  .ct-mobile-item .ct-dot-year{font-family:var(--font-mono);font-size:10px;color:var(--accent);margin:0 0 4px;}
+  .ct-mobile-item .ct-dot-label{font-family:var(--font-mono);font-size:12px;color:var(--text);margin:0;}
 }
 
 /* GRAPH */
@@ -848,6 +997,8 @@ footer {
   .boot-grid { grid-template-columns: 1fr; }
   .boot-center { padding-left: 0; border-left: none; padding-top: 32px; border-top: 1px solid var(--line); }
   .hero { padding: 100px 20px 60px; }
+  .hero-content { grid-template-columns: 1fr; gap: 0; }
+  .hero-photo { display: none; }
   .section { padding: 80px 20px; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
   .metrics-grid { grid-template-columns: 1fr 1fr; }
@@ -916,7 +1067,7 @@ footer {
     <a href="#approach">ПОДХОД</a>
     <a href="#skills">СКИЛЛЫ</a>
     <a href="#cases-section">КЕЙСЫ</a>
-    <a href="#stats-board">СТАТИСТИКА</a>
+    <a href="#timeline">КАРЬЕРА</a>
     <a href="blog.html">БЛОГ</a>
     <a href="#contact">КОНТАКТ</a>
   </div>
@@ -929,6 +1080,7 @@ footer {
 <section class="hero">
   <canvas id="three-canvas"></canvas>
   <div class="hero-content">
+    <div class="hero-left">
     <div class="hero-meta">
       <span>RU // KAZAN, RELOCATE</span>
       <span>27 Y.O.</span>
@@ -964,6 +1116,17 @@ footer {
       <div class="scroll-hint">
         <span>SCROLL</span>
         <div class="scroll-hint-line"></div>
+      </div>
+    </div>
+    </div><!-- /hero-left -->
+
+    <div class="hero-photo" style="background-image:url('img/photo-dog.png');">
+      <div class="hero-photo-corners">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="hero-photo-cap">
+        <span>АЙДАР · КАЗАНЬ</span>
+        <span>// _01</span>
       </div>
     </div>
   </div>
@@ -1105,7 +1268,7 @@ footer {
       <div class="cr-arrow">подробно <span>→</span></div>
     </a>
 
-    <a href="cases.html#case-3" class="case-row reveal">
+    <a href="bulanti.html" class="case-row reveal">
       <div class="cr-num">_03</div>
       <div class="cr-info">
         <div class="cr-co">BULANTI · бренд мужской одежды</div>
@@ -1135,84 +1298,40 @@ footer {
   </div>
 </section>
 
-<section class="section reveal" id="stats-board">
+<section class="section reveal" id="timeline">
   <div class="section-head">
     <div>
-      <div class="section-label">04 / aggregate_stats</div>
-      <h2 class="section-title">7 лет работы<br><em>в одном</em> <span class="hot">экране</span></h2>
+      <div class="section-label">04 / career_timeline</div>
+      <h2 class="section-title">7 лет: <em>от продавца</em><br>до <span class="hot">руководителя</span></h2>
     </div>
-    <div class="section-num">// live_board</div>
+    <div class="section-num">// 2019 → 2025</div>
   </div>
 
-  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:32px;">
-    Совокупные результаты по проектам. Цифры тикают, потому что цифры — это жизнь.
+  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:48px;">
+    Нажми на любую точку — раскроется карточка с подробностями.
   </p>
 
-  <div class="stats-board">
-    <!-- верхняя строка: главные KPI -->
-    <div class="sb-row sb-row-hero">
-      <div class="sb-cell sb-cell-big">
-        <div class="sb-mini">// total_reach</div>
-        <div class="sb-big" data-stat="reach">0</div>
-        <div class="sb-tag">просмотров по всем проектам</div>
-        <div class="sb-bar"><span></span></div>
-      </div>
-      <div class="sb-cell sb-cell-big">
-        <div class="sb-mini">// peak_youtube</div>
-        <div class="sb-big" data-stat="yt">0</div>
-        <div class="sb-tag">подписчиков · Bulanti YT за 8 месяцев</div>
-        <div class="sb-bar"><span></span></div>
-      </div>
-      <div class="sb-cell sb-cell-big">
-        <div class="sb-mini">// team_grown</div>
-        <div class="sb-big" data-stat="team">0</div>
-        <div class="sb-tag">человек в команде на пике</div>
-        <div class="sb-bar"><span></span></div>
-      </div>
+  <div class="career-timeline" id="careerTimeline">
+    <!-- горизонтальная ось -->
+    <div class="ct-axis">
+      <div class="ct-axis-line"></div>
+      <!-- точки расставляются JS-ом -->
+      <div class="ct-dots" id="ctDots"></div>
     </div>
 
-    <!-- средняя строка: разный размер ячеек -->
-    <div class="sb-row sb-row-mid">
-      <div class="sb-cell">
-        <div class="sb-mini">// romi_max</div>
-        <div class="sb-mid" data-stat="romi">0<span>%</span></div>
-        <div class="sb-tag">пиковый ROMI (LuxHomme)</div>
-      </div>
-      <div class="sb-cell">
-        <div class="sb-mini">// avg_cpm</div>
-        <div class="sb-mid" data-stat="cpm">0<span> ₽</span></div>
-        <div class="sb-tag">средний CPM при рынке 250–500 ₽</div>
-      </div>
-      <div class="sb-cell">
-        <div class="sb-mini">// brand_mp</div>
-        <div class="sb-mid">×<span data-stat="brand">0</span></div>
-        <div class="sb-tag">рост брендовых запросов на МП</div>
-      </div>
-      <div class="sb-cell">
-        <div class="sb-mini">// years</div>
-        <div class="sb-mid" data-stat="years">0</div>
-        <div class="sb-tag">в маркетинге</div>
-      </div>
-    </div>
-
-    <!-- нижняя: тикер-строка с метками платформ -->
-    <div class="sb-ticker">
-      <div class="sb-ticker-track">
-        <span><b>INSTAGRAM</b> · охват пика 3.4M</span>
-        <span><b>TIKTOK</b> · 1.1M подписчиков</span>
-        <span><b>YOUTUBE</b> · 59M просмотров</span>
-        <span><b>TELEGRAM</b> · CRM-канал × ×× ×××</span>
-        <span><b>WB · OZON</b> · 204 заказа</span>
-        <span><b>YA.DIRECT</b> · CPL −32%</span>
-        <span><b>VK</b> · 25K подписчиков</span>
-        <!-- duplicate -->
-        <span><b>INSTAGRAM</b> · охват пика 3.4M</span>
-        <span><b>TIKTOK</b> · 1.1M подписчиков</span>
-        <span><b>YOUTUBE</b> · 59M просмотров</span>
-        <span><b>TELEGRAM</b> · CRM-канал × ×× ×××</span>
-        <span><b>WB · OZON</b> · 204 заказа</span>
-        <span><b>YA.DIRECT</b> · CPL −32%</span>
-        <span><b>VK</b> · 25K подписчиков</span>
+    <!-- карточка деталей -->
+    <div class="ct-card" id="ctCard">
+      <div class="ct-card-inner">
+        <div class="ct-card-top">
+          <div>
+            <div class="ct-card-co" id="ctCo"></div>
+            <div class="ct-card-role" id="ctRole"></div>
+          </div>
+          <div class="ct-card-period" id="ctPeriod"></div>
+        </div>
+        <div class="ct-card-desc" id="ctDesc"></div>
+        <div class="ct-card-tags" id="ctTags"></div>
+        <a class="ct-card-link" id="ctLink" href="#" style="display:none">смотреть кейс →</a>
       </div>
     </div>
   </div>
@@ -1264,11 +1383,17 @@ footer {
     </div>
   </div>
 
-  <!-- фото-заглушки на потом -->
+  <!-- фото-полоса с реальными фотографиями -->
   <div class="photos-strip">
-    <div class="photo-ph"></div>
-    <div class="photo-ph"></div>
-    <div class="photo-ph"></div>
+    <div class="photo-ph" style="background-image:url('img/photo-dog.png');background-size:cover;background-position:center top;">
+      <div style="position:absolute;bottom:10px;left:12px;font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.08em;z-index:3">// КАЗАНЬ · АМСТАФФ</div>
+    </div>
+    <div class="photo-ph" style="background-image:url('img/photo-youtube.png');background-size:cover;background-position:center top;">
+      <div style="position:absolute;bottom:10px;left:12px;font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.08em;z-index:3">// BULANTI · YT 100K+</div>
+    </div>
+    <div class="photo-ph" style="background-image:url('img/photo-centroom.png');background-size:cover;background-position:center top;">
+      <div style="position:absolute;bottom:10px;left:12px;font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.08em;z-index:3">// CENTROOMSTROY · 2025</div>
+    </div>
   </div>
 </section>
 
@@ -1681,82 +1806,135 @@ function initGraph() {
   draw();
 }
 
-// STATS BOARD — счётчики и периодические "тики"
-function initStatsBoard(){
-  const board = document.getElementById('stats-board');
-  if(!board) return;
+// CAREER TIMELINE
+function initCareerTimeline(){
+  const JOBS = [
+    {
+      year:'2019',
+      label:'РусАлко',
+      co:'ООО «РусАлко»',
+      role:'Маркетолог (старт: продавец → замдир)',
+      period:'авг 2019 — авг 2021',
+      desc:'Начинал продавцом-кассиром, через год — замдиректора магазина, затем перешёл в маркетинг. Вёл сайт и соцсети, создавал контент, планировал и проводил маркетинговые акции, запускал обучающие видео для персонала.',
+      tags:['SMM','контент','офлайн-мероприятия','дизайн'],
+      link:null
+    },
+    {
+      year:'2021',
+      label:'Стандартпродмаш',
+      co:'ООО «Стандартпродмаш» · press-forms.ru',
+      role:'Руководитель отдела маркетинга',
+      period:'авг 2021 — май 2022',
+      desc:'Первая позиция руководителя. Обеспечивал входящий поток клиентов: организовывал рекламные кампании, проводил маркетинговые исследования, работал с соцсетями. Параллельно — SMM-менеджер в фитнес-клубе Contras.',
+      tags:['B2B','лидогенерация','контекст','команда'],
+      link:null
+    },
+    {
+      year:'2022',
+      label:'Реаспект / Друг Медиа',
+      co:'ООО «Реаспект» + ООО «Друг Медиа»',
+      role:'Руководитель проектов / Project Manager',
+      period:'май 2022 — янв 2023',
+      desc:'Агентский опыт. Управлял проектами по контекстной рекламе, SEO, SMM и аналитике. Работал с клиентами, выстраивал долгосрочные партнёрские отношения. Параллельно организовывал работу внутри маркетингового агентства Друг Медиа.',
+      tags:['PM','контекст','SEO','клиентский сервис','агентство'],
+      link:null
+    },
+    {
+      year:'2023',
+      label:'Bulanti',
+      co:'Bulanti — бренд мужской одежды',
+      role:'Руководитель отдела маркетинга',
+      period:'фев 2023 — янв 2025',
+      desc:'Собрал отдел с 1 до 11 человек. YouTube: ×15 за 8 месяцев, 59M просмотров. TikTok 1.1M. Instagram охват до 3.4M. CRM-маркетинг: OR 88%, CR 3.2%, +9234 базы. Пик — открытие флагмана в Москве.',
+      tags:['YouTube','TikTok','CRM','команда 1→11','контент','Telegram-бот'],
+      link:'bulanti.html'
+    },
+    {
+      year:'2024',
+      label:'LuxHomme',
+      co:'LuxHomme · WB / OZON / YM',
+      role:'Руководитель направления (параллельно)',
+      period:'окт 2024 — май 2025',
+      desc:'Инфлюенс-маркетинг для бытовой техники на маркетплейсах. Средний CPM 75 ₽ при рынке 250–500 ₽. Продажи 2.78M ₽, ROMI 450%, 1014 размещений, 9.91M охват, 204 заказа. Полный разбор — на отдельной странице.',
+      tags:['инфлюенс','WB','OZON','CPM','ROMI 450%','маркетплейсы'],
+      link:'luxhomme.html'
+    },
+    {
+      year:'2025',
+      label:'Centroomstroy',
+      co:'CentRoomStroy · ИЖС, Казань',
+      role:'Руководитель отдела маркетинга',
+      period:'фев — сент 2025',
+      desc:'Строительная компания, загородные дома. Перестроил работу отдела из 6 человек: контекст в Я.Директ, сквозная аналитика. CPL −32%, лиды +58%, CR 1.8% → 3.1%, ROMI +27%. Запустили новое направление «Комфорт+».',
+      tags:['Я.Директ','B2C','девелопмент','аналитика','команда 6 чел.'],
+      link:'cases.html#case-2'
+    },
+  ];
 
-  // финальные значения
-  const STATS = {
-    reach: 90_000_000,   // 90M суммарный охват (Bulanti ~60M YT + остальные)
-    yt: 143_000,         // Bulanti YouTube
-    team: 11,            // пик команды Bulanti
-    romi: 450,           // LuxHomme
-    cpm: 75,             // LuxHomme
-    brand: 4,            // ×4 брендовые запросы Bulanti
-    years: 7,            // лет в маркетинге
-  };
+  const dotsWrap = document.getElementById('ctDots');
+  const card = document.getElementById('ctCard');
+  if(!dotsWrap || !card) return;
 
-  function fmtNum(v, key){
-    if(key==='reach'){
-      if(v>=1e6) return (v/1e6).toFixed(1)+'M';
-      if(v>=1e3) return Math.round(v/1e3)+'K';
-      return Math.round(v);
-    }
-    if(key==='yt'){
-      return Math.round(v/1000)+'K';
-    }
-    return Math.round(v);
-  }
+  let active = -1;
 
-  function animateCounter(el, target, duration, key){
-    const start = performance.now();
-    function tick(now){
-      const t = Math.min(1, (now-start)/duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const v = target * eased;
-      el.textContent = fmtNum(v, key);
-      if(t<1) requestAnimationFrame(tick);
-      else el.textContent = fmtNum(target, key);
-    }
-    requestAnimationFrame(tick);
-  }
+  // расставляем точки по горизонтали
+  JOBS.forEach((job, i)=>{
+    const pct = (i / (JOBS.length - 1)) * 100;
+    const isUp = i % 2 === 0; // чётные — метка сверху
 
-  function runOnce(){
-    Object.keys(STATS).forEach(key=>{
-      const el = board.querySelector(`[data-stat="${key}"]`);
-      if(!el) return;
-      const target = STATS[key];
-      animateCounter(el, target, 1800, key);
-    });
-  }
+    const dot = document.createElement('div');
+    dot.className = 'ct-dot' + (isUp ? ' up' : '');
+    dot.style.left = pct + '%';
 
-  // запускаем при появлении в viewport
-  const io = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting && !e.target.dataset.done){
-        e.target.dataset.done = '1';
-        runOnce();
-        // повторный тик каждые 8 секунд: лёгкая флуктуация одного из чисел
-        setInterval(()=>{
-          const keys = ['reach','yt','team','romi','cpm','brand','years'];
-          const k = keys[Math.floor(Math.random()*keys.length)];
-          const el = board.querySelector(`[data-stat="${k}"]`);
-          if(el){
-            el.style.transition = 'color .3s, transform .3s';
-            el.style.color = '#fff';
-            el.style.transform = 'scale(1.03)';
-            setTimeout(()=>{
-              el.style.color = '';
-              el.style.transform = '';
-              el.textContent = fmtNum(STATS[k], k);
-            }, 320);
-          }
-        }, 4500);
+    dot.innerHTML = `
+      <div class="ct-dot-label">${job.label}</div>
+      <div class="ct-dot-circle"></div>
+      <div class="ct-dot-year">${job.year}</div>
+    `;
+
+    dot.addEventListener('click', ()=>{
+      if(active === i){
+        // закрыть если уже открыта
+        active = -1;
+        card.classList.remove('open');
+        dotsWrap.querySelectorAll('.ct-dot').forEach(d=>d.classList.remove('active'));
+        return;
+      }
+      active = i;
+      dotsWrap.querySelectorAll('.ct-dot').forEach(d=>d.classList.remove('active'));
+      dot.classList.add('active');
+      fillCard(job);
+      card.classList.add('open');
+      // скроллим к карточке на мобиле
+      if(window.innerWidth < 960){
+        setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
       }
     });
-  }, { threshold: 0.2 });
-  io.observe(board);
+
+    dotsWrap.appendChild(dot);
+  });
+
+  function fillCard(job){
+    document.getElementById('ctCo').textContent = job.co;
+    document.getElementById('ctRole').textContent = job.role;
+    document.getElementById('ctPeriod').textContent = job.period;
+    document.getElementById('ctDesc').textContent = job.desc;
+    const tagsEl = document.getElementById('ctTags');
+    tagsEl.innerHTML = job.tags.map(t=>`<span class="ct-tag">${t}</span>`).join('');
+    const linkEl = document.getElementById('ctLink');
+    if(job.link){
+      linkEl.href = job.link;
+      linkEl.style.display = 'inline-flex';
+    } else {
+      linkEl.style.display = 'none';
+    }
+  }
+
+  // открыть первую по умолчанию через небольшую задержку
+  setTimeout(()=>{
+    const firstDot = dotsWrap.querySelector('.ct-dot');
+    if(firstDot) firstDot.click();
+  }, 600);
 }
 
 // REVEAL
@@ -1775,7 +1953,7 @@ function initReveal() {
 window.addEventListener('DOMContentLoaded', () => {
   runBoot();
   setTimeout(() => { try { initThree(); } catch(e) { console.warn('Three init failed:', e); } }, 200);
-  setTimeout(() => { initReveal(); initStatsBoard(); }, 300);
+  setTimeout(() => { initReveal(); initCareerTimeline(); }, 300);
 });
 
 document.addEventListener('keydown', (e) => {

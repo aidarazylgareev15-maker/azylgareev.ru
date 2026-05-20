@@ -43,10 +43,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 
 .lx-summary{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:2px;}
 .sum-item{background:var(--bg);padding:28px 32px;}
-.sum-num{font-family:var(--font-mono);font-size:44px;font-weight:700;letter-spacing:-.04em;color:var(--accent);line-height:1;margin-bottom:6px;}
-.sum-num span{font-size:22px;color:var(--text-dim);}
+.sum-num{
+  font-family:var(--font-mono);
+  font-size:44px;
+  font-weight:700;
+  letter-spacing:-.04em;
+  color:var(--accent);
+  line-height:1;
+  margin-bottom:10px;
+  font-variant-numeric:tabular-nums;
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+}
+.sum-num span{
+  font-size:22px;
+  color:var(--text-dim);
+  font-weight:500;
+  letter-spacing:0;
+}
 .sum-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
-.sum-note{font-size:13px;color:var(--text-faint);margin-top:6px;}
+.sum-note{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);margin-top:6px;letter-spacing:.02em;}
 
 /* SECTIONS */
 .lx-section{max-width:1400px;margin:0 auto;padding:80px 48px 0;}
@@ -158,6 +175,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <a href="index.html">ГЛАВНАЯ</a>
     <a href="cases.html">КЕЙСЫ</a>
     <a href="luxhomme.html" class="active">LUXHOMME</a>
+    <a href="bulanti.html">BULANTI</a>
     <a href="blog.html">БЛОГ</a>
     <a href="index.html#contact">КОНТАКТ</a>
   </div>
@@ -179,7 +197,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
 <div class="lx-section" style="padding-top:40px;">
   <div class="lx-summary">
     <div class="sum-item">
-      <div class="sum-num">2.78M <span>₽</span></div>
+      <div class="sum-num">2.78M<span>₽</span></div>
       <div class="sum-label">продажи</div>
       <div class="sum-note">вложено 728 500 ₽</div>
     </div>
@@ -194,7 +212,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       <div class="sum-note">4 соцсети</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">75 <span>₽</span></div>
+      <div class="sum-num">75<span>₽</span></div>
       <div class="sum-label">средний CPM</div>
       <div class="sum-note">рынок: 250–500 ₽</div>
     </div>

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кейс BULANTI — Айдар Азылгареев</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0a; --bg-soft:#111; --bg-card:#141414;
+  --line:rgba(255,255,255,0.08); --line-hot:rgba(255,255,255,0.18);
+  --text:#ededed; --text-dim:#a8a8a8; --text-faint:#7a7a7a;
+  --accent:#c6ff00; --accent-soft:rgba(198,255,0,0.1); --accent-glow:rgba(198,255,0,0.4);
+  --font-mono:'JetBrains Mono',monospace;
+  --font-display:'Bricolage Grotesque',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:0.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;background:rgba(10,10,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none;}
+.brand-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent-glow);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{color:var(--text-dim);text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);}
+.nav-right{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);animation:pulse 1.5s infinite;}
+
+.back{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;margin-bottom:40px;transition:color .2s;}
+.back:hover{color:var(--accent);}
+
+/* HERO */
+.lx-hero{padding:140px 48px 0;max-width:1400px;margin:0 auto;}
+.lx-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:20px;}
+.lx-title{font-size:clamp(52px,7vw,100px);font-weight:300;letter-spacing:-.035em;line-height:.92;margin-bottom:36px;}
+.lx-title em{font-style:italic;color:var(--text-dim);}
+.lx-title strong{font-weight:700;}
+
+/* hero с фото справа */
+.lx-hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end;margin-bottom:40px;}
+.lx-hero-photo{
+  aspect-ratio:3/4;
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  position:relative;overflow:hidden;
+  background-size:cover;
+  background-position:center top;
+}
+.lx-hero-photo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, transparent 40%, rgba(10,10,10,.8) 100%);
+}
+.lx-hero-photo-cap{
+  position:absolute;bottom:14px;left:14px;right:14px;z-index:2;
+  font-family:var(--font-mono);font-size:10px;color:var(--accent);letter-spacing:.1em;
+  display:flex;justify-content:space-between;
+}
+
+.lx-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:2px;}
+.sum-item{background:var(--bg);padding:28px 32px;}
+.sum-num{
+  font-family:var(--font-mono);
+  font-size:44px;
+  font-weight:700;
+  letter-spacing:-.04em;
+  color:var(--accent);
+  line-height:1;
+  margin-bottom:10px;
+  font-variant-numeric:tabular-nums;
+  display:flex;align-items:baseline;gap:6px;
+}
+.sum-num span{font-size:22px;color:var(--text-dim);font-weight:500;letter-spacing:0;}
+.sum-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+.sum-note{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);margin-top:6px;letter-spacing:.02em;}
+
+/* SECTIONS */
+.lx-section{max-width:1400px;margin:0 auto;padding:80px 48px 0;}
+.sec-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:16px;}
+.sec-title{font-size:clamp(32px,4vw,52px);font-weight:300;letter-spacing:-.025em;line-height:1.05;margin-bottom:40px;border-bottom:1px solid var(--line);padding-bottom:28px;}
+.sec-title em{font-style:italic;color:var(--text-dim);}
+.sec-title strong{font-weight:700;}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+.chart-box{background:var(--bg-card);padding:32px;}
+.chart-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px;}
+canvas{width:100%!important;height:240px!important;}
+
+/* MONTH TABLE */
+.month-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px;margin-top:2px;}
+.month-table th{text-align:left;padding:10px 16px;border-bottom:2px solid var(--line-hot);color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;font-size:10px;font-weight:400;background:var(--bg-card);}
+.month-table td{padding:12px 16px;border-bottom:1px dashed var(--line);background:var(--bg-card);}
+.month-table tr:last-child td{border-bottom:none;}
+.month-table tr:hover td{background:var(--bg-soft);}
+.td-num{color:var(--accent);font-weight:700;}
+.td-neutral{color:var(--text);}
+.td-dim{color:var(--text-dim);}
+.td-best{color:#4eff91;}
+
+/* PLATFORMS */
+.platform-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.platform-card{background:var(--bg-card);padding:28px 24px;}
+.pl-name{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;}
+.pl-reach{font-family:var(--font-mono);font-size:30px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums;}
+.pl-reach em{font-size:16px;color:var(--text-dim);font-style:normal;margin-left:4px;}
+.pl-share{margin-top:14px;}
+.pl-detail{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);line-height:1.6;}
+.pl-detail b{color:var(--text);}
+
+/* NODE MAP */
+.nodemap-wrap{position:relative;border:1px solid var(--line);background:var(--bg-card);overflow:hidden;}
+.nodemap{width:100%;height:560px;display:block;cursor:default;}
+.nodemap-hint{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;z-index:5;letter-spacing:.05em;}
+.nodemap-hint::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent-glow);animation:pulse 2s infinite;}
+.node-group{cursor:pointer;}
+.node-circle{fill:transparent;stroke:var(--accent);stroke-width:1.5;transition:.3s;}
+.node-dot{fill:var(--accent);transition:.3s;}
+.node-label{fill:var(--text-dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.3s;pointer-events:none;text-anchor:middle;}
+.node-group:hover .node-circle{stroke-width:2.5;filter:drop-shadow(0 0 14px var(--accent));}
+.node-group:hover .node-dot{r:5;}
+.node-group:hover .node-label{fill:var(--accent);}
+.node-link{stroke:var(--accent);stroke-width:.6;opacity:.18;fill:none;transition:opacity .3s,stroke-width .3s;}
+.node-link.hot{opacity:1;stroke-width:1.5;}
+.node-tooltip{position:absolute;pointer-events:none;padding:14px 18px;background:rgba(10,10,10,.96);border:1px solid var(--accent);font-family:var(--font-mono);font-size:12px;color:var(--text);max-width:280px;opacity:0;transition:opacity .2s;z-index:10;backdrop-filter:blur(8px);}
+.node-tooltip.visible{opacity:1;}
+.node-tooltip .tt-name{color:var(--accent);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.node-tooltip .tt-val{font-size:22px;color:var(--text);font-family:var(--font-display);font-weight:500;margin-bottom:6px;line-height:1.1;}
+.node-tooltip .tt-desc{color:var(--text-dim);font-size:11px;line-height:1.5;}
+
+/* STORY blocks */
+.story-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.story-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+.story-p{font-size:16px;color:var(--text-dim);line-height:1.8;margin-bottom:18px;}
+.story-p:last-child{margin-bottom:0;}
+.story-p strong{color:var(--text);font-weight:500;}
+
+.story-photo{
+  aspect-ratio:4/5;
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  background-size:cover;background-position:center;
+  position:sticky;top:100px;
+}
+.story-photo-cap{
+  padding:14px 18px;
+  font-family:var(--font-mono);font-size:10px;color:var(--text-faint);
+  letter-spacing:.1em;
+  border-top:1px solid var(--line);
+  background:var(--bg-card);
+  display:flex;justify-content:space-between;
+}
+
+/* HIGHLIGHT BANNER */
+.highlight{
+  margin-top:60px;
+  padding:48px;
+  border:1px solid var(--accent);
+  background:linear-gradient(135deg, rgba(198,255,0,.05), transparent 60%);
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:40px;
+  align-items:center;
+}
+.highlight-tag{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.18em;color:var(--accent);text-transform:uppercase;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+}
+.highlight-text h3{font-family:var(--font-display);font-size:36px;font-weight:400;line-height:1.1;margin-bottom:16px;}
+.highlight-text h3 b{color:var(--accent);font-weight:700;}
+.highlight-text p{color:var(--text-dim);font-size:15px;line-height:1.7;}
+
+/* TEAM TIMELINE — рост команды */
+.team-timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:32px;}
+.team-step{background:var(--bg-card);padding:24px 20px;position:relative;}
+.ts-num{font-family:var(--font-mono);font-size:10px;color:var(--accent);letter-spacing:.12em;margin-bottom:10px;}
+.ts-count{font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--text);line-height:1;margin-bottom:6px;}
+.ts-name{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);line-height:1.5;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s;}
+.reveal.in{opacity:1;transform:none;}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+/* MOBILE */
+@media(max-width:960px){
+  nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .lx-hero,.lx-section{padding-left:20px;padding-right:20px;}
+  .lx-hero{padding-top:110px;}
+  .lx-section{padding-top:56px;}
+  .lx-hero-grid{grid-template-columns:1fr;gap:30px;}
+  .lx-summary{grid-template-columns:1fr 1fr;}
+  .sum-item{padding:20px;}
+  .sum-num{font-size:30px;}
+  .charts-grid{grid-template-columns:1fr;}
+  .platform-grid{grid-template-columns:1fr 1fr;}
+  .nodemap{height:480px;}
+  .story-block{grid-template-columns:1fr;gap:30px;}
+  .story-photo{position:static;}
+  .highlight{grid-template-columns:1fr;gap:20px;padding:28px;}
+  .highlight-tag{writing-mode:horizontal-tb;transform:none;}
+  .team-timeline{grid-template-columns:1fr 1fr;}
+  footer{padding:24px 20px;flex-direction:column;}
+  .month-table{font-size:10px;}
+  .month-table th,.month-table td{padding:8px 10px;}
+}
+@media(max-width:480px){
+  .lx-summary{grid-template-columns:1fr;}
+  .platform-grid{grid-template-columns:1fr;}
+  .nodemap{height:400px;}
+  .team-timeline{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="brand-dot"></span>
+    <span>AZYLGAREEV</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">ГЛАВНАЯ</a>
+    <a href="cases.html">КЕЙСЫ</a>
+    <a href="luxhomme.html">LUXHOMME</a>
+    <a href="bulanti.html" class="active">BULANTI</a>
+    <a href="blog.html">БЛОГ</a>
+    <a href="index.html#contact">КОНТАКТ</a>
+  </div>
+  <div class="nav-right"><span class="live-dot"></span>OPEN TO OFFERS</div>
+</nav>
+
+<!-- HERO -->
+<div class="lx-hero">
+  <a class="back" href="cases.html">← все кейсы</a>
+  <div class="lx-eyebrow">// case_03 / bulanti — бренд мужской одежды</div>
+
+  <div class="lx-hero-grid">
+    <h1 class="lx-title">
+      От <em>контент-маркетинга</em><br>до <strong>отдела на 11 чел.</strong><br>
+      и <strong>флагмана в Москве</strong>
+    </h1>
+    <div class="lx-hero-photo" style="background-image:url('img/photo-youtube.png');">
+      <div class="lx-hero-photo-cap">
+        <span>// silver_play_button</span>
+        <span>BULANTI · YT 100K+</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY NUMBERS -->
+<div class="lx-section" style="padding-top:40px;">
+  <div class="lx-summary">
+    <div class="sum-item">
+      <div class="sum-num">143<span>K</span></div>
+      <div class="sum-label">YouTube подписчиков</div>
+      <div class="sum-note">×15 за 8 месяцев</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">59<span>M</span></div>
+      <div class="sum-label">просмотров YT</div>
+      <div class="sum-note">3.24M лайков</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">1.1<span>M</span></div>
+      <div class="sum-label">TikTok подписчиков</div>
+      <div class="sum-note">пик ER 4.3%</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">3.4<span>M</span></div>
+      <div class="sum-label">охват IG в пике</div>
+      <div class="sum-note">июнь 2023</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">1<span>→ 11</span></div>
+      <div class="sum-label">команда</div>
+      <div class="sum-note">за 2 года</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-num">×4</div>
+      <div class="sum-label">бренд на МП</div>
+      <div class="sum-note">WB + OZON</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS — динамика по соцсетям -->
+<div class="lx-section reveal">
+  <div class="sec-label">// динамика</div>
+  <h2 class="sec-title">Как росли <em>соцсети</em> по месяцам</h2>
+  <div class="charts-grid">
+    <div class="chart-box">
+      <div class="chart-title">YouTube — подписчики (тыс.)</div>
+      <canvas id="chartYT"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">YouTube — просмотры (млн)</div>
+      <canvas id="chartYTViews"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Instagram — охват аккаунта (тыс.)</div>
+      <canvas id="chartIG"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Instagram — ER (%)</div>
+      <canvas id="chartIGER"></canvas>
+    </div>
+  </div>
+
+  <table class="month-table">
+    <thead>
+      <tr>
+        <th>МЕСЯЦ</th>
+        <th>YT ПОДП</th>
+        <th>YT ПРОСМ</th>
+        <th>IG ПОДП</th>
+        <th>IG ОХВАТ</th>
+        <th>IG ER</th>
+        <th>TIKTOK</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-neutral">Апрель</td>
+        <td class="td-dim">15.6K</td>
+        <td class="td-dim">2.08M</td>
+        <td class="td-dim">95.3K</td>
+        <td class="td-dim">92K</td>
+        <td class="td-dim">0.60%</td>
+        <td class="td-dim">1.03M</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Май</td>
+        <td class="td-dim">19.0K</td>
+        <td class="td-dim">1.27M</td>
+        <td class="td-dim">97.1K</td>
+        <td class="td-dim">513K</td>
+        <td class="td-dim">1.53%</td>
+        <td class="td-dim">1.05M</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Июнь ★</td>
+        <td class="td-dim">19.5K</td>
+        <td class="td-dim">335K</td>
+        <td class="td-dim">108.5K</td>
+        <td class="td-best">3.41M ↑</td>
+        <td class="td-best">6.20% ↑</td>
+        <td class="td-dim">1.07M</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Июль</td>
+        <td class="td-dim">20.3K</td>
+        <td class="td-dim">318K</td>
+        <td class="td-dim">110.9K</td>
+        <td class="td-dim">952K</td>
+        <td class="td-dim">0.69%</td>
+        <td class="td-dim">1.08M</td>
+      </tr>
+      <tr style="background:rgba(198,255,0,0.04)">
+        <td class="td-neutral">Август ★</td>
+        <td class="td-best">106K ↑</td>
+        <td class="td-best">32.2M ↑</td>
+        <td class="td-dim">111.2K</td>
+        <td class="td-dim">508K</td>
+        <td class="td-dim">0.42%</td>
+        <td class="td-dim">1.09M</td>
+      </tr>
+      <tr>
+        <td class="td-neutral">Сентябрь</td>
+        <td class="td-best">146K</td>
+        <td class="td-best">19.9M</td>
+        <td class="td-dim">112.3K</td>
+        <td class="td-dim">558K</td>
+        <td class="td-dim">1.39%</td>
+        <td class="td-best">1.11M ↑</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- HIGHLIGHT — флагман -->
+<div class="lx-section reveal">
+  <div class="highlight">
+    <div class="highlight-tag">milestone</div>
+    <div class="highlight-text">
+      <h3>Пик работы — <b>открытие флагманского магазина в Москве</b></h3>
+      <p>
+        После небольшого шоурума в Казани бренд масштабировался в столицу.
+        Это стало главным показательным результатом проекта: локальный казанский бренд
+        вырос до федерального масштаба за счёт системного контент-маркетинга,
+        выстроенной команды и работы с маркетплейсами.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORMS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// площадки</div>
+  <h2 class="sec-title">Итоги <em>по соцсетям</em></h2>
+  <div class="platform-grid">
+    <div class="platform-card">
+      <div class="pl-name">YouTube</div>
+      <div class="pl-reach">143<em>K</em></div>
+      <div class="pl-detail">
+        <b>+133K</b> за 8 мес<br>
+        59M просмотров<br>
+        3.24M лайков<br>
+        ER 15.18%
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">TikTok</div>
+      <div class="pl-reach">1.11<em>M</em></div>
+      <div class="pl-detail">
+        <b>+76K</b> за период<br>
+        Пик ER 4.29%<br>
+        Ролики-миллионники
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">Instagram</div>
+      <div class="pl-reach">112<em>K</em></div>
+      <div class="pl-detail">
+        <b>+17K</b> за период<br>
+        218 публикаций<br>
+        Пик охвата 3.4M<br>
+        ER 0.6% → 6.2%
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">Telegram</div>
+      <div class="pl-reach">11<em>K</em></div>
+      <div class="pl-detail">
+        <b>CRM-канал</b><br>
+        Перелив с WB/OZON<br>
+        QR на бирках<br>
+        Воронки в боте
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="pl-name">ВКонтакте</div>
+      <div class="pl-reach">25<em>K</em></div>
+      <div class="pl-detail">
+        <b>Стабильный рост</b><br>
+        Без таргета<br>
+        Активная аудитория
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROST KOMANDY -->
+<div class="lx-section reveal">
+  <div class="sec-label">// команда</div>
+  <h2 class="sec-title">Как росла <em>команда</em>: <strong>1 → 11</strong></h2>
+  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:32px">
+    Изначально нанимался как руководитель отдела контента. По мере роста задач
+    собирал команду под продакшн и медиа.
+  </p>
+
+  <div class="team-timeline">
+    <div class="team-step">
+      <div class="ts-num">_01</div>
+      <div class="ts-count">1</div>
+      <div class="ts-name">Я.<br>Контент с нуля.</div>
+    </div>
+    <div class="team-step">
+      <div class="ts-num">_02</div>
+      <div class="ts-count">+ SMM</div>
+      <div class="ts-name">SMM-менеджер для постинга и аналитики</div>
+    </div>
+    <div class="team-step">
+      <div class="ts-num">_03</div>
+      <div class="ts-count">+ ВИДЕО</div>
+      <div class="ts-name">Видеомейкер + актёр для роликов</div>
+    </div>
+    <div class="team-step">
+      <div class="ts-num">_04</div>
+      <div class="ts-count">+ ФОТО</div>
+      <div class="ts-name">Фотограф для продуктовых съёмок</div>
+    </div>
+    <div class="team-step">
+      <div class="ts-num">_05</div>
+      <div class="ts-count">11</div>
+      <div class="ts-name">Контент · CRM · разработка сайта</div>
+    </div>
+  </div>
+</div>
+
+<!-- STORY -->
+<div class="lx-section reveal">
+  <div class="sec-label">// разбор</div>
+  <h2 class="sec-title">Как мы это <em>сделали</em></h2>
+
+  <div class="story-block">
+    <div>
+      <div class="story-h">// контекст и точка старта</div>
+      <p class="story-p">
+        Bulanti — бренд мужской одежды. Изначально <strong>один шоурум в Казани</strong>
+        плюс продажи на маркетплейсах WB и Ozon. Меня нанимали как
+        <strong>руководителя отдела контента</strong> — заниматься съёмками и контент-маркетингом.
+      </p>
+      <p class="story-p">
+        На старте: в маркетинге <strong>1 человек</strong>, соцсети велись для галочки,
+        YouTube-канал — около 9.6К подписчиков и стагнация, брендовых запросов на маркетплейсах
+        почти нет.
+      </p>
+
+      <div class="story-h" style="margin-top:36px">// что делал — контент и продакшн</div>
+      <p class="story-p">
+        Продюсировал съёмки, ставил задачи команде, выстраивал TOV бренда.
+        К июню 2023 — <strong>5 роликов-миллионников</strong> в Instagram за один месяц,
+        охват аккаунта вырос до <strong>3.4 млн</strong>.
+      </p>
+      <p class="story-p">
+        Контент работал не на «красиво», а на конкретные цели:
+        <strong>прокачка узнаваемости → переход на МП → удержание через CRM</strong>.
+        Каждый канал имел свою роль в воронке.
+      </p>
+
+      <div class="story-h" style="margin-top:36px">// YouTube — рывок</div>
+      <p class="story-p">
+        В августе 2023 канал «выстрелил»: <strong>+87 тысяч подписчиков за месяц</strong>,
+        32 млн просмотров. К сентябрю — 146К подписчиков, серебряная кнопка YouTube.
+        За 8 месяцев — рост <strong>×15</strong>.
+      </p>
+      <p class="story-p">
+        Совокупно за период: <strong>59 млн просмотров, 3.24 млн лайков, 38 тыс. комментариев</strong>.
+      </p>
+
+      <div class="story-h" style="margin-top:36px">// интеграции и CRM</div>
+      <p class="story-p">
+        Связал <strong>CRM ↔ сайт ↔ Telegram-бот ↔ WB и Ozon</strong> через API и вебхуки.
+        Данные из всех каналов сходились в одном месте — это давало возможность
+        видеть путь клиента сквозь все точки касания.
+      </p>
+      <p class="story-p">
+        Придумал механику перевода покупателей с маркетплейсов в свой Telegram-канал:
+        <strong>QR-коды на бирках → бот → бонус</strong>. Так бренд переставал зависеть от
+        алгоритмов МП и накапливал собственную базу.
+      </p>
+      <p class="story-p">
+        CRM-маркетинг: SMS + WhatsApp + Email. Open Rate <strong>88%</strong>,
+        Click Rate <strong>29%</strong>, конверсия <strong>3.2%</strong>, +<strong>9 234</strong>
+        контакта в базу.
+      </p>
+    </div>
+
+    <div>
+      <div class="story-photo" style="background-image:url('img/photo-youtube.png');"></div>
+      <div class="story-photo-cap">
+        <span>// IMG_01</span>
+        <span>YT silver play</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NODE MAP -->
+<div class="lx-section reveal">
+  <div class="sec-label">// карта показателей</div>
+  <h2 class="sec-title">Связи <em>между метриками</em> · <strong>hover</strong></h2>
+  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:24px">
+    Узлы — ключевые показатели проекта. Наведи на узел — увидишь значение и активные связи,
+    по линиям пойдут частицы.
+  </p>
+
+  <div class="nodemap-wrap" id="blNodeMap">
+    <div class="nodemap-hint">наведи курсор на точку</div>
+    <svg class="nodemap" viewBox="0 0 1400 560" preserveAspectRatio="xMidYMid meet">
+      <g id="blLinks"></g>
+      <g id="blParticles"></g>
+      <g id="blNodes"></g>
+    </svg>
+    <div class="node-tooltip" id="blTooltip"></div>
+  </div>
+</div>
+
+<!-- ИТОГ -->
+<div class="lx-section reveal">
+  <div class="sec-label">// итог</div>
+  <h2 class="sec-title">Что осталось <em>после</em></h2>
+  <div class="story-block">
+    <div>
+      <p class="story-p">
+        За 2 года: <strong>YouTube ×15</strong> (143К подп.), <strong>59M просмотров</strong>,
+        TikTok <strong>1.1M</strong>, Instagram охват в пике <strong>3.4M</strong>,
+        Telegram как CRM-канал, ВК с органическим ростом.
+      </p>
+      <p class="story-p">
+        Бренд из локального казанского вырос до федерального. Запущен флагман в Москве.
+        Команда из 1 человека превратилась в <strong>отдел из 11 специалистов</strong>:
+        контент, CRM, разработка, продакшн.
+      </p>
+      <p class="story-p">
+        Брендовые запросы на маркетплейсах выросли <strong>×4</strong>. CRM-канал в Telegram
+        стал самостоятельным источником повторных продаж.
+      </p>
+    </div>
+    <div>
+      <p class="story-p" style="font-family:var(--font-mono);font-size:13px;color:var(--text-faint);line-height:1.8">
+        // период: февраль 2023 — январь 2025<br>
+        // роль: руководитель отдела маркетинга<br>
+        // источники цифр: маркетинговые отчёты Bulanti, отчёты LiveDune<br>
+        // площадки: YouTube, Instagram, TikTok, Telegram, ВК, WB, Ozon
+      </p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>AIDAR AZYLGAREEV · azylgareev.ru · <a href="cases.html" style="color:var(--text-faint);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">← все кейсы</a></span>
+  <span>
+    <a href="https://t.me/aidarazylgareev" target="_blank" style="color:var(--text-faint);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">@aidarazylgareev</a>
+  </span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const MONTHS = ['Апр', 'Май', 'Июнь', 'Июль', 'Авг', 'Сент'];
+const YT_SUBS    = [15.6, 19.0, 19.5, 20.3, 106, 146];   // тыс.
+const YT_VIEWS   = [2.08, 1.27, 0.34, 0.32, 32.25, 19.9]; // млн
+const IG_REACH   = [92, 514, 3412, 952, 508, 558];        // тыс.
+const IG_ER      = [0.60, 1.53, 6.20, 0.69, 0.42, 1.39];  // %
+
+Chart.defaults.color = '#7a7a7a';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const ACC = '#c6ff00';
+const ACC2 = '#4eff91';
+const DIM = 'rgba(255,255,255,0.15)';
+
+function lineChart(id, labels, data, color, fillAlpha){
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  new Chart(ctx, {
+    type:'line',
+    data:{labels, datasets:[{
+      data, borderColor:color,
+      backgroundColor:color + (fillAlpha || '20'),
+      pointBackgroundColor:color, pointRadius:4, tension:.3, fill:true,
+      borderWidth:2
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:DIM}, ticks:{color:'#7a7a7a'}},
+        y:{grid:{color:DIM}, ticks:{color:'#7a7a7a'}}
+      }
+    }
+  });
+}
+
+lineChart('chartYT',      MONTHS, YT_SUBS,  ACC,  '30');
+lineChart('chartYTViews', MONTHS, YT_VIEWS, ACC2, '20');
+lineChart('chartIG',      MONTHS, IG_REACH, ACC,  '20');
+lineChart('chartIGER',    MONTHS, IG_ER,    ACC2, '20');
+
+// ── NODE MAP ──────────────────────────────────────────────────────────────────
+const NM_NODES = [
+  { id:'yt',        x:200,  y:140, r:36, name:'YOUTUBE',    val:'143K',  desc:'Подписчиков, ×15 за 8 месяцев' },
+  { id:'ytviews',   x:130,  y:340, r:28, name:'YT VIEWS',   val:'59M',   desc:'Просмотров YouTube за период' },
+  { id:'tt',        x:1180, y:140, r:34, name:'TIKTOK',     val:'1.1M',  desc:'Подписчиков TikTok' },
+  { id:'ig',        x:700,  y:220, r:30, name:'INSTAGRAM',  val:'112K',  desc:'Охват в пике 3.4M, ER 6.2%' },
+  { id:'tg',        x:1260, y:380, r:22, name:'TELEGRAM',   val:'11K',   desc:'CRM-канал, перелив с МП' },
+  { id:'team',      x:420,  y:480, r:30, name:'TEAM',       val:'1 → 11', desc:'Рост команды отдела' },
+  { id:'brand',     x:950,  y:470, r:24, name:'BRAND MP',   val:'×4',    desc:'Брендовые запросы на WB/OZON' },
+  { id:'flagman',   x:700,  y:480, r:26, name:'FLAGMAN',    val:'МСК',   desc:'Открытие флагмана в Москве' },
+  { id:'crm',       x:1080, y:300, r:20, name:'CRM',        val:'88% OR',desc:'Open Rate, Click 29%, +9234 база' },
+];
+const NM_LINKS = [
+  ['yt','ytviews'],['yt','team'],['yt','flagman'],
+  ['tt','flagman'],['ig','team'],['ig','flagman'],
+  ['tg','crm'],['tg','brand'],['crm','brand'],
+  ['flagman','brand'],['team','flagman'],['ig','crm'],['yt','brand']
+];
+
+function renderNodeMap(){
+  const svgLinks = document.getElementById('blLinks');
+  const svgNodes = document.getElementById('blNodes');
+  if(!svgLinks || !svgNodes) return;
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  NM_LINKS.forEach(([from,to])=>{
+    const a = NM_NODES.find(n=>n.id===from);
+    const b = NM_NODES.find(n=>n.id===to);
+    if(!a||!b) return;
+    const line = document.createElementNS(SVG_NS,'line');
+    line.setAttribute('x1',a.x); line.setAttribute('y1',a.y);
+    line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+    line.setAttribute('class','node-link');
+    line.dataset.from = from; line.dataset.to = to;
+    svgLinks.appendChild(line);
+  });
+
+  NM_NODES.forEach(n=>{
+    const g = document.createElementNS(SVG_NS,'g');
+    g.setAttribute('class','node-group');
+    g.dataset.id = n.id;
+
+    const c = document.createElementNS(SVG_NS,'circle');
+    c.setAttribute('cx',n.x); c.setAttribute('cy',n.y); c.setAttribute('r',n.r);
+    c.setAttribute('class','node-circle');
+
+    const d = document.createElementNS(SVG_NS,'circle');
+    d.setAttribute('cx',n.x); d.setAttribute('cy',n.y); d.setAttribute('r',3);
+    d.setAttribute('class','node-dot');
+
+    const t = document.createElementNS(SVG_NS,'text');
+    t.setAttribute('x',n.x); t.setAttribute('y', n.y + n.r + 18);
+    t.setAttribute('class','node-label');
+    t.textContent = n.name;
+
+    g.appendChild(c); g.appendChild(d); g.appendChild(t);
+
+    g.addEventListener('mouseenter', ()=>{
+      svgLinks.querySelectorAll('.node-link').forEach(l=>{
+        if(l.dataset.from===n.id || l.dataset.to===n.id){
+          l.classList.add('hot');
+          spawnParticle(l);
+        }
+      });
+      const tip = document.getElementById('blTooltip');
+      if(tip){
+        tip.innerHTML = `<div class="tt-name">${n.name}</div><div class="tt-val">${n.val}</div><div class="tt-desc">${n.desc}</div>`;
+        tip.classList.add('visible');
+      }
+    });
+    g.addEventListener('mousemove', e=>{
+      const tip = document.getElementById('blTooltip');
+      const wrap = document.getElementById('blNodeMap');
+      if(tip && wrap){
+        const r = wrap.getBoundingClientRect();
+        let x = e.clientX - r.left + 18;
+        let y = e.clientY - r.top + 18;
+        if(x + 280 > r.width) x = e.clientX - r.left - 280;
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+      }
+    });
+    g.addEventListener('mouseleave', ()=>{
+      svgLinks.querySelectorAll('.node-link').forEach(l=>l.classList.remove('hot'));
+      const tip = document.getElementById('blTooltip');
+      if(tip) tip.classList.remove('visible');
+    });
+
+    svgNodes.appendChild(g);
+  });
+}
+
+function spawnParticle(lineEl){
+  const partsG = document.getElementById('blParticles');
+  if(!partsG) return;
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const x1 = +lineEl.getAttribute('x1');
+  const y1 = +lineEl.getAttribute('y1');
+  const x2 = +lineEl.getAttribute('x2');
+  const y2 = +lineEl.getAttribute('y2');
+  const p = document.createElementNS(SVG_NS,'circle');
+  p.setAttribute('r', 2.6);
+  p.setAttribute('cx', x1); p.setAttribute('cy', y1);
+  p.setAttribute('fill', '#c6ff00');
+  p.setAttribute('opacity', '.95');
+  p.style.filter = 'drop-shadow(0 0 6px #c6ff00)';
+  partsG.appendChild(p);
+  const duration = 700 + Math.random()*500;
+  const start = performance.now();
+  function step(now){
+    const t = Math.min((now-start)/duration, 1);
+    const x = x1 + (x2-x1)*t;
+    const y = y1 + (y2-y1)*t;
+    p.setAttribute('cx', x); p.setAttribute('cy', y);
+    p.setAttribute('opacity', .95*(1 - t*0.7));
+    if(t<1) requestAnimationFrame(step); else p.remove();
+  }
+  requestAnimationFrame(step);
+}
+
+renderNodeMap();
+
+// фоновые редкие частицы
+setInterval(()=>{
+  const lines = document.querySelectorAll('#blLinks .node-link');
+  if(!lines.length) return;
+  const l = lines[Math.floor(Math.random()*lines.length)];
+  spawnParticle(l);
+}, 1500);
+
+// REVEAL
+const io = new IntersectionObserver(e => e.forEach(x => {
+  if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); }
+}), { threshold:.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
