@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Блог — Айдар Азылгареев</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a0a; --bg-soft:#111; --bg-card:#141414;
+  --line:rgba(255,255,255,0.08); --line-hot:rgba(255,255,255,0.18);
+  --text:#ededed; --text-dim:#a8a8a8; --text-faint:#7a7a7a;
+  --accent:#c6ff00; --accent-soft:rgba(198,255,0,0.1); --accent-glow:rgba(198,255,0,0.4);
+  --font-mono:'JetBrains Mono',monospace;
+  --font-display:'Bricolage Grotesque',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:0.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;background:rgba(10,10,10,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none;}
+.brand-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent-glow);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{color:var(--text-dim);text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);}
+.nav-right{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.live-dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);animation:pulse 1.5s infinite;}
+
+/* PAGE HERO */
+.page-hero{padding:160px 48px 60px;max-width:1400px;margin:0 auto;}
+.page-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:20px;}
+.page-title{font-size:clamp(48px,6vw,88px);font-weight:300;letter-spacing:-.03em;line-height:.95;margin-bottom:24px;}
+.page-title em{font-style:italic;color:var(--text-dim);}
+.page-title strong{font-weight:700;}
+.page-sub{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;border-left:2px solid var(--accent);padding-left:18px;}
+
+.back{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;margin-bottom:32px;transition:color .2s;}
+.back:hover{color:var(--accent);}
+
+/* BLOG LIST */
+.blog-wrap{max-width:1400px;margin:0 auto;padding:32px 48px 120px;}
+
+/* фильтр-теги */
+.tags-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;}
+.tag-chip{
+  padding:8px 14px;
+  border:1px solid var(--line);
+  background:var(--bg-card);
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--text-dim);
+  cursor:pointer;
+  transition:all .2s;
+  text-transform:uppercase;
+}
+.tag-chip:hover{border-color:var(--accent);color:var(--text);}
+.tag-chip.active{background:var(--accent);color:#000;border-color:var(--accent);}
+
+/* список статей */
+.blog-list{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+}
+.post{
+  display:grid;
+  grid-template-columns:160px 1fr auto;
+  gap:32px;
+  align-items:start;
+  padding:32px 28px;
+  background:var(--bg);
+  text-decoration:none;
+  color:inherit;
+  transition:background .25s;
+  position:relative;
+  overflow:hidden;
+}
+.post::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(90deg, rgba(198,255,0,.07), transparent);
+  transition:width .4s;
+}
+.post:hover{background:var(--bg-soft);}
+.post:hover::before{width:100%;}
+.post > *{position:relative;z-index:1;}
+
+.post-meta{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.06em;}
+.post-meta .date{display:block;color:var(--text-dim);}
+.post-meta .read{display:block;margin-top:4px;}
+.post-meta .post-tag{display:inline-block;margin-top:10px;padding:3px 8px;background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);text-transform:uppercase;font-size:9px;letter-spacing:.1em;}
+
+.post-info{}
+.post-title{font-size:24px;font-weight:500;line-height:1.2;margin-bottom:10px;color:var(--text);}
+.post-excerpt{color:var(--text-dim);font-size:14px;line-height:1.6;}
+
+.post-arrow{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:var(--text-dim);
+  white-space:nowrap;text-transform:uppercase;display:flex;align-items:center;gap:8px;
+}
+.post-arrow span{color:var(--accent);transition:transform .25s;}
+.post:hover .post-arrow{color:var(--accent);}
+.post:hover .post-arrow span{transform:translateX(6px);}
+
+/* большая первая статья — featured */
+.post.featured{
+  grid-template-columns:1fr;
+  padding:48px 36px;
+  background:linear-gradient(180deg, var(--bg-card) 0%, var(--bg) 100%);
+}
+.post.featured .post-title{font-size:36px;line-height:1.1;font-weight:400;}
+.post.featured .post-excerpt{font-size:16px;max-width:760px;margin-top:14px;}
+.post.featured .post-arrow{margin-top:24px;font-size:12px;}
+.post.featured .post-meta{display:flex;gap:18px;margin-bottom:20px;align-items:center;}
+.post.featured .post-meta .date,
+.post.featured .post-meta .read{display:inline;color:var(--text-dim);}
+.post.featured .post-meta .post-tag{margin-top:0;}
+.post.featured-marker{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;
+  color:var(--accent);text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.post.featured-marker::before{content:'◆';font-size:14px;}
+
+/* пустое состояние */
+.empty-state{
+  padding:80px 32px;
+  text-align:center;
+  border:1px dashed var(--line-hot);
+  background:var(--bg-soft);
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-dim);
+  line-height:1.8;
+  max-width:680px;
+  margin:60px auto 0;
+}
+.empty-state strong{color:var(--accent);}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--line);font-family:var(--font-mono);font-size:10px;color:var(--text-faint);display:flex;justify-content:space-between;max-width:1400px;margin:0 auto;flex-wrap:wrap;gap:12px;}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s, transform .6s;}
+.reveal.in{opacity:1;transform:none;}
+
+/* MOBILE */
+@media(max-width:960px){
+  nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .page-hero{padding:110px 20px 40px;}
+  .blog-wrap{padding:20px 20px 80px;}
+  .post{grid-template-columns:1fr;gap:14px;padding:24px 22px;}
+  .post-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  .post-meta .date,.post-meta .read{display:inline;}
+  .post-meta .post-tag{margin-top:0;}
+  .post-arrow{justify-content:flex-start;}
+  .post.featured{padding:28px 22px;}
+  .post.featured .post-title{font-size:24px;}
+  footer{padding:24px 20px;flex-direction:column;gap:8px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="brand-dot"></span>
+    <span>AZYLGAREEV</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">ГЛАВНАЯ</a>
+    <a href="cases.html">КЕЙСЫ</a>
+    <a href="luxhomme.html">LUXHOMME</a>
+    <a href="blog.html" class="active">БЛОГ</a>
+    <a href="index.html#contact">КОНТАКТ</a>
+  </div>
+  <div class="nav-right"><span class="live-dot"></span>OPEN TO OFFERS</div>
+</nav>
+
+<div class="page-hero">
+  <a class="back" href="index.html">← назад</a>
+  <div class="page-eyebrow">// blog.log · мысли · опыт · находки</div>
+  <h1 class="page-title">
+    Что я <em>думаю</em><br>про <strong>маркетинг</strong>
+  </h1>
+  <p class="page-sub">
+    Записки из практики: как считать ROMI, чтобы не врать самому себе.
+    Где экономить, где платить, как строить команду и не сойти с ума.
+  </p>
+</div>
+
+<div class="blog-wrap">
+
+  <!-- фильтры по темам -->
+  <div class="tags-row">
+    <span class="tag-chip active" data-filter="all">все</span>
+    <span class="tag-chip" data-filter="influence">инфлюенс</span>
+    <span class="tag-chip" data-filter="team">команда</span>
+    <span class="tag-chip" data-filter="analytics">аналитика</span>
+    <span class="tag-chip" data-filter="content">контент</span>
+    <span class="tag-chip" data-filter="performance">performance</span>
+  </div>
+
+  <!-- список статей -->
+  <div class="blog-list" id="blogList">
+
+    <!-- FEATURED — первая статья пример -->
+    <a href="#" class="post featured reveal" data-tag="influence">
+      <div class="featured-marker">FEATURED · самая свежая</div>
+      <div class="post-meta">
+        <span class="date">__ ____ 2026</span>
+        <span class="read">__ мин чтения</span>
+        <span class="post-tag">инфлюенс</span>
+      </div>
+      <div class="post-info">
+        <div class="post-title">Заголовок первой статьи — будет тут после публикации</div>
+        <div class="post-excerpt">
+          Тут будет небольшая аннотация — 2–3 предложения, чтобы человек понял,
+          стоит ли тратить время. Заглушка: замени на свой текст в blog.html
+          (найди класс <code>post featured</code>).
+        </div>
+      </div>
+      <div class="post-arrow">читать <span>→</span></div>
+    </a>
+
+    <!-- placeholder articles -->
+    <a href="#" class="post reveal" data-tag="team">
+      <div class="post-meta">
+        <span class="date">__ ____ ____</span>
+        <span class="read">__ мин</span>
+        <span class="post-tag">команда</span>
+      </div>
+      <div class="post-info">
+        <div class="post-title">Статья 02 — название и тема</div>
+        <div class="post-excerpt">Краткое описание материала. Заглушка для будущей публикации.</div>
+      </div>
+      <div class="post-arrow">читать <span>→</span></div>
+    </a>
+
+    <a href="#" class="post reveal" data-tag="analytics">
+      <div class="post-meta">
+        <span class="date">__ ____ ____</span>
+        <span class="read">__ мин</span>
+        <span class="post-tag">аналитика</span>
+      </div>
+      <div class="post-info">
+        <div class="post-title">Статья 03 — название и тема</div>
+        <div class="post-excerpt">Краткое описание материала. Заглушка для будущей публикации.</div>
+      </div>
+      <div class="post-arrow">читать <span>→</span></div>
+    </a>
+
+    <a href="#" class="post reveal" data-tag="content">
+      <div class="post-meta">
+        <span class="date">__ ____ ____</span>
+        <span class="read">__ мин</span>
+        <span class="post-tag">контент</span>
+      </div>
+      <div class="post-info">
+        <div class="post-title">Статья 04 — название и тема</div>
+        <div class="post-excerpt">Краткое описание материала. Заглушка для будущей публикации.</div>
+      </div>
+      <div class="post-arrow">читать <span>→</span></div>
+    </a>
+
+  </div>
+
+  <div class="empty-state">
+    <strong>// блог в разработке</strong><br>
+    Сюда заливаются мои статьи о маркетинге, аналитике и управлении командой.<br>
+    Заглушки выше заменяются на реальные материалы по мере публикации.
+  </div>
+
+</div>
+
+<footer>
+  <span>AIDAR AZYLGAREEV · azylgareev.ru</span>
+  <span>
+    <a href="https://t.me/aidarazylgareev" target="_blank" style="color:var(--text-faint);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">@aidarazylgareev</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:aidarazylgareev15@gmail.com" style="color:var(--text-faint);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">aidarazylgareev15@gmail.com</a>
+  </span>
+</footer>
+
+<script>
+// фильтры по тегам
+const chips = document.querySelectorAll('.tag-chip');
+const posts = document.querySelectorAll('.post');
+chips.forEach(c => c.addEventListener('click', () => {
+  chips.forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  const f = c.dataset.filter;
+  posts.forEach(p => {
+    if(f === 'all' || p.dataset.tag === f){
+      p.style.display = '';
+    } else {
+      p.style.display = 'none';
+    }
+  });
+}));
+
+// reveal
+const io = new IntersectionObserver(e => e.forEach(x => {
+  if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); }
+}), { threshold:.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

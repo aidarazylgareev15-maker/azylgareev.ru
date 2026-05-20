@@ -11,7 +11,7 @@
 :root {
   --bg:#0a0a0a; --bg-soft:#111; --bg-card:#141414;
   --line:rgba(255,255,255,0.08); --line-hot:rgba(255,255,255,0.18);
-  --text:#ededed; --text-dim:#8a8a8a; --text-faint:#555;
+  --text:#ededed; --text-dim:#a8a8a8; --text-faint:#7a7a7a;
   --accent:#c6ff00; --accent-soft:rgba(198,255,0,0.1); --accent-glow:rgba(198,255,0,0.4);
   --font-mono:'JetBrains Mono',monospace;
   --font-display:'Bricolage Grotesque',sans-serif;
@@ -72,19 +72,6 @@ canvas{width:100%!important;height:220px!important;}
 .td-dim{color:var(--text-dim);}
 .td-best{color:#4eff91;}
 
-/* TOP BLOGGERS */
-.bloggers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
-.blogger-card{background:var(--bg-card);padding:24px 20px;transition:background .25s;}
-.blogger-card:hover{background:var(--bg-soft);}
-.bl-name{font-size:18px;font-weight:600;margin-bottom:4px;}
-.bl-posts{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);letter-spacing:.08em;margin-bottom:16px;}
-.bl-reach{font-family:var(--font-mono);font-size:26px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:4px;}
-.bl-reach-l{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:12px;}
-.bl-cpm{font-family:var(--font-mono);font-size:12px;}
-.bl-cpm .v{color:var(--accent);}
-.bl-bar{margin-top:12px;height:3px;background:var(--line-hot);}
-.bl-bar .fill{height:100%;background:var(--accent);}
-
 /* PLATFORMS */
 .platform-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
 .platform-card{background:var(--bg-card);padding:28px 24px;}
@@ -96,27 +83,38 @@ canvas{width:100%!important;height:220px!important;}
 .pl-bar .fill{height:100%;background:var(--accent);}
 .pl-pct{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
 
-/* VIDEOS */
-.videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
-.video-card{background:var(--bg-card);overflow:hidden;position:relative;cursor:pointer;transition:background .25s;}
-.video-card:hover{background:var(--bg-soft);}
-.video-thumb{width:100%;aspect-ratio:9/16;background:var(--bg-soft);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.video-thumb-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
-.play-btn{width:48px;height:48px;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:18px;transition:all .2s;}
-.video-card:hover .play-btn{background:var(--accent);color:var(--bg);}
-.video-thumb-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%;opacity:.15;}
-.video-thumb-grid span{background:var(--line-hot);border:1px solid var(--bg);}
-.video-info{padding:20px;}
-.vi-author{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
-.vi-product{font-size:14px;font-weight:500;margin-bottom:10px;}
-.vi-stats{display:flex;gap:16px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
-.vi-stats strong{color:var(--text);}
-.video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;pointer-events:none;}
-.video-card:hover .video-overlay{background:rgba(198,255,0,0.04);}
+/* NODE MAP (interactive) */
+.nodemap-wrap{position:relative;border:1px solid var(--line);background:var(--bg-card);overflow:hidden;}
+.nodemap{width:100%;height:560px;display:block;cursor:default;}
+.nodemap-hint{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;z-index:5;letter-spacing:.05em;}
+.nodemap-hint::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent-glow);animation:pulse 2s infinite;}
+.node-group{cursor:pointer;}
+.node-circle{fill:transparent;stroke:var(--accent);stroke-width:1.5;transition:.3s;}
+.node-dot{fill:var(--accent);transition:.3s;}
+.node-label{fill:var(--text-dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.3s;pointer-events:none;text-anchor:middle;}
+.node-group:hover .node-circle{stroke-width:2.5;filter:drop-shadow(0 0 14px var(--accent));}
+.node-group:hover .node-dot{r:5;}
+.node-group:hover .node-label{fill:var(--accent);}
+.node-link{stroke:var(--accent);stroke-width:.6;opacity:.18;fill:none;transition:opacity .3s,stroke-width .3s;}
+.node-link.hot{opacity:1;stroke-width:1.5;}
+.node-tooltip{position:absolute;pointer-events:none;padding:14px 18px;background:rgba(10,10,10,.96);border:1px solid var(--accent);font-family:var(--font-mono);font-size:12px;color:var(--text);max-width:280px;opacity:0;transition:opacity .2s;z-index:10;backdrop-filter:blur(8px);}
+.node-tooltip.visible{opacity:1;}
+.node-tooltip .tt-name{color:var(--accent);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.node-tooltip .tt-val{font-size:22px;color:var(--text);font-family:var(--font-display);font-weight:500;margin-bottom:6px;line-height:1.1;}
+.node-tooltip .tt-desc{color:var(--text-dim);font-size:11px;line-height:1.5;}
 
-/* NOTE */
-.add-video-note{margin-top:20px;padding:20px 24px;border:1px dashed var(--line-hot);font-family:var(--font-mono);font-size:12px;color:var(--text-faint);line-height:1.6;}
-.add-video-note strong{color:var(--accent);}
+/* TOP RESULTS (без имён) */
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.result-card{background:var(--bg-card);padding:24px;transition:background .25s;display:flex;flex-direction:column;gap:8px;position:relative;}
+.result-card:hover{background:var(--bg-soft);}
+.rc-rank{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.1em;}
+.rc-product{font-size:18px;font-weight:500;color:var(--text);}
+.rc-platform{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.rc-views{display:flex;flex-direction:column;gap:2px;margin-top:6px;}
+.rc-views strong{font-family:var(--font-mono);font-size:24px;color:var(--text);font-weight:700;line-height:1;}
+.rc-views span{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;}
+.rc-cpm{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);margin-top:6px;}
+.rc-cpm span{color:var(--accent);font-weight:700;}
 
 /* REVEAL */
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s;}
@@ -136,16 +134,16 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
   .sum-item{padding:20px;}
   .sum-num{font-size:30px;}
   .charts-grid{grid-template-columns:1fr;}
-  .bloggers-grid{grid-template-columns:1fr 1fr;}
   .platform-grid{grid-template-columns:1fr 1fr;}
-  .videos-grid{grid-template-columns:1fr 1fr;}
+  .results-grid{grid-template-columns:1fr 1fr;}
+  .nodemap{height:480px;}
   footer{padding:24px 20px;flex-direction:column;}
 }
 @media(max-width:480px){
   .lx-summary{grid-template-columns:1fr 1fr;}
-  .bloggers-grid{grid-template-columns:1fr 1fr;}
   .platform-grid{grid-template-columns:1fr 1fr;}
-  .videos-grid{grid-template-columns:1fr;}
+  .results-grid{grid-template-columns:1fr;}
+  .nodemap{height:400px;}
 }
 </style>
 </head>
@@ -160,7 +158,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <a href="index.html">ГЛАВНАЯ</a>
     <a href="cases.html">КЕЙСЫ</a>
     <a href="luxhomme.html" class="active">LUXHOMME</a>
-    <a href="index.html#calc">CPM CALC</a>
+    <a href="blog.html">БЛОГ</a>
     <a href="index.html#contact">КОНТАКТ</a>
   </div>
   <div class="nav-right"><span class="live-dot"></span>OPEN TO OFFERS</div>
@@ -208,7 +206,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <div class="sum-item">
       <div class="sum-num">1014</div>
       <div class="sum-label">размещений</div>
-      <div class="sum-note">20 авторов</div>
+      <div class="sum-note">за 4 месяца</div>
     </div>
   </div>
 </div>
@@ -329,23 +327,33 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
   </div>
 </div>
 
-<!-- BLOGGERS -->
+<!-- NODE MAP (interactive) -->
 <div class="lx-section reveal">
-  <div class="sec-label">// авторы</div>
-  <h2 class="sec-title">Топ <strong>8 авторов</strong> по охвату</h2>
-  <div class="bloggers-grid" id="bloggersGrid"></div>
+  <div class="sec-label">// карта показателей</div>
+  <h2 class="sec-title">Связи <em>между метриками</em> · <strong>hover</strong></h2>
+  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:24px">
+    Каждый узел — ключевой показатель проекта. Наведи курсор — увидишь значение и активные связи, по линиям пойдут частицы.
+  </p>
+
+  <div class="nodemap-wrap" id="lxNodeMap">
+    <div class="nodemap-hint">наведи курсор на точку</div>
+    <svg class="nodemap" viewBox="0 0 1400 560" preserveAspectRatio="xMidYMid meet">
+      <g id="lxLinks"></g>
+      <g id="lxParticles"></g>
+      <g id="lxNodes"></g>
+    </svg>
+    <div class="node-tooltip" id="lxTooltip"></div>
+  </div>
 </div>
 
-<!-- VIDEOS -->
+<!-- TOP RESULTS (без имён авторов — только цифры) -->
 <div class="lx-section reveal">
-  <div class="sec-label">// лучшие ролики</div>
-  <h2 class="sec-title">Топ <strong>размещений</strong> — <em>реальные ссылки</em></h2>
-  <div class="videos-grid" id="videosGrid"></div>
-  <div class="add-video-note">
-    <strong>Как добавить свои ролики:</strong> открой файл luxhomme.html в любом редакторе,
-    найди массив <code>VIDEO_DATA</code> в начале скрипта и замени ссылки на нужные.
-    Поддерживаются Instagram Reels, TikTok, YouTube Shorts, ВКонтакте.
-  </div>
+  <div class="sec-label">// топ размещений</div>
+  <h2 class="sec-title">Лучшие <strong>результаты</strong> по охвату и CPM</h2>
+  <p style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);max-width:680px;line-height:1.7;margin-bottom:24px">
+    Топ-6 публикаций по производительности. Имена авторов под NDA.
+  </p>
+  <div class="results-grid" id="resultsGrid"></div>
 </div>
 
 <footer>
@@ -365,31 +373,14 @@ const CPM     = [46.1, 61.1, 227.7, 35.5];
 const VIEWS   = [3189, 3635, 1311, 1521]; // тыс.
 const ROMI    = [232, 386, 232, 319];
 
-const BLOGGERS = [
-  { name:'Эмма',      reach:3406838, posts:78,  spend:115000, cpm:33.8  },
-  { name:'Гюзель',    reach:1467977, posts:74,  spend:129000, cpm:87.9  },
-  { name:'Александра',reach:1255736, posts:41,  spend:61500,  cpm:49.0  },
-  { name:'Диана',     reach:1178318, posts:10,  spend:18500,  cpm:15.7  },
-  { name:'Ирина',     reach:788567,  posts:29,  spend:48500,  cpm:61.5  },
-  { name:'Юлиана',    reach:739571,  posts:16,  spend:32500,  cpm:43.9  },
-  { name:'Гузалия',   reach:571858,  posts:42,  spend:62000,  cpm:108.4 },
-  { name:'Алия',      reach:181568,  posts:48,  spend:83000,  cpm:457.1 },
-];
-
-// ── ЗАМЕНИ ССЫЛКИ НА РЕАЛЬНЫЕ РОЛИКИ ─────────────────────────────────────────
-const VIDEO_DATA = [
-  { author:'Эмма',      product:'Виброплатформа', views:'2 700 000', cpm:'2.4 ₽',
-    url:'https://www.instagram.com/reel/DVYsWiuApv1/', platform:'Instagram' },
-  { author:'Диана',     product:'Кофемашина',     views:'1 100 000', cpm:'—',
-    url:'https://vk.ru/clip-216845528_456239893?c=1',  platform:'ВКонтакте' },
-  { author:'Александра',product:'Аэрогриль',       views:'738 500',   cpm:'2.0 ₽',
-    url:'https://vt.tiktok.com/ZS9s6yXNc/',            platform:'TikTok'    },
-  { author:'Ирина',     product:'Аэрогриль',       views:'627 000',   cpm:'10.3 ₽',
-    url:'https://www.instagram.com/reel/DUayJp_AC7p/', platform:'Instagram' },
-  { author:'Юлиана',    product:'Робот-пылесос',   views:'465 000',   cpm:'14.0 ₽',
-    url:'https://www.instagram.com/reel/DV9KMA_jPkA/', platform:'Instagram' },
-  { author:'Гузалия',   product:'Аэрогриль',       views:'400 000',   cpm:'3.8 ₽',
-    url:'https://www.instagram.com/reel/DX9zxGKOpaP/', platform:'Instagram' },
+// ── TOP RESULTS (без имён — только цифры) ─────────────────────────────────────
+const RESULTS = [
+  { product:'Виброплатформа', views:'2 700 000', cpm:'2.4 ₽',  platform:'Instagram' },
+  { product:'Кофемашина',     views:'1 100 000', cpm:'—',      platform:'ВКонтакте' },
+  { product:'Аэрогриль',      views:'738 500',   cpm:'2.0 ₽',  platform:'TikTok'    },
+  { product:'Аэрогриль',      views:'627 000',   cpm:'10.3 ₽', platform:'Instagram' },
+  { product:'Робот-пылесос',  views:'465 000',   cpm:'14.0 ₽', platform:'Instagram' },
+  { product:'Аэрогриль',      views:'400 000',   cpm:'3.8 ₽',  platform:'Instagram' },
 ];
 
 // ── CHART DEFAULTS ────────────────────────────────────────────────────────────
@@ -455,47 +446,146 @@ barChart('chartROI', MONTHS, [{
   backgroundColor: MONTHS.map((_, i) => i === 2 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
 }], { y:{}, chart:{} });
 
-// ── BLOGGERS ──────────────────────────────────────────────────────────────────
-const maxReach = Math.max(...BLOGGERS.map(b => b.reach));
-document.getElementById('bloggersGrid').innerHTML = BLOGGERS.map(b => {
-  const pct = Math.round(b.reach / maxReach * 100);
-  const reachFmt = b.reach >= 1e6
-    ? (b.reach/1e6).toFixed(2)+'M'
-    : (b.reach/1000).toFixed(0)+'K';
-  return `
-  <div class="blogger-card">
-    <div class="bl-name">${b.name}</div>
-    <div class="bl-posts">${b.posts} публикаций</div>
-    <div class="bl-reach">${reachFmt}</div>
-    <div class="bl-reach-l">просмотров</div>
-    <div class="bl-cpm">CPM <span class="v">${b.cpm} ₽</span></div>
-    <div class="bl-bar"><div class="fill" style="width:${pct}%"></div></div>
-  </div>`;
-}).join('');
-
-// ── VIDEOS ────────────────────────────────────────────────────────────────────
-document.getElementById('videosGrid').innerHTML = VIDEO_DATA.map(v => `
-  <div class="video-card" onclick="window.open('${v.url}','_blank')">
-    <div class="video-thumb">
-      <div class="video-thumb-grid">
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <div class="video-thumb-inner">
-        <div class="play-btn">▶</div>
-        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.4);text-transform:uppercase;">${v.platform}</div>
-      </div>
-    </div>
-    <div class="video-info">
-      <div class="vi-author">${v.author}</div>
-      <div class="vi-product">${v.product}</div>
-      <div class="vi-stats">
-        <span><strong>${v.views}</strong> views</span>
-        <span>CPM <strong>${v.cpm}</strong></span>
-      </div>
-    </div>
-    <div class="video-overlay"></div>
+// ── TOP RESULTS RENDER (без имён) ─────────────────────────────────────────────
+document.getElementById('resultsGrid').innerHTML = RESULTS.map((v, i) => `
+  <div class="result-card">
+    <div class="rc-rank">#${(i+1).toString().padStart(2,'0')}</div>
+    <div class="rc-product">${v.product}</div>
+    <div class="rc-platform">${v.platform}</div>
+    <div class="rc-views"><strong>${v.views}</strong><span>просмотров</span></div>
+    <div class="rc-cpm">CPM <span>${v.cpm}</span></div>
   </div>
 `).join('');
+
+// ── NODE MAP (интерактивная карта показателей с частицами) ────────────────────
+const NM_NODES = [
+  { id:'reach',      x:170,  y:230, r:28, name:'REACH',      val:'9.91M',   desc:'Суммарный охват за 4 месяца' },
+  { id:'orders',     x:760,  y:90,  r:22, name:'ORDERS',     val:'204',     desc:'Заказы на WB + OZON' },
+  { id:'romi',       x:1020, y:170, r:34, name:'ROMI',       val:'450%',    desc:'Возврат маркетинговых инвестиций' },
+  { id:'cpm',        x:1250, y:380, r:24, name:'CPM',        val:'75 ₽',    desc:'Средний CPM (рынок: 250–500 ₽)' },
+  { id:'best',       x:1340, y:200, r:18, name:'BEST CPM',   val:'35 ₽',    desc:'Лучший месяц — май' },
+  { id:'sales',      x:540,  y:370, r:38, name:'SALES',      val:'2.78M ₽', desc:'Продажи на маркетплейсах' },
+  { id:'budget',     x:200,  y:480, r:22, name:'BUDGET',     val:'728K ₽',  desc:'Совокупный бюджет за 4 месяца' },
+  { id:'placements', x:870,  y:480, r:26, name:'PLACEMENTS', val:'1014',    desc:'Размещений за 4 месяца' }
+];
+const NM_LINKS = [
+  ['reach','orders'], ['reach','sales'], ['orders','romi'], ['romi','cpm'],
+  ['cpm','best'], ['sales','romi'], ['sales','cpm'], ['budget','sales'],
+  ['budget','placements'], ['placements','sales'], ['orders','sales']
+];
+
+function renderNodeMap(){
+  const svgLinks = document.getElementById('lxLinks');
+  const svgNodes = document.getElementById('lxNodes');
+  if(!svgLinks || !svgNodes) return;
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // линии
+  NM_LINKS.forEach(([from,to])=>{
+    const a = NM_NODES.find(n=>n.id===from);
+    const b = NM_NODES.find(n=>n.id===to);
+    if(!a||!b) return;
+    const line = document.createElementNS(SVG_NS,'line');
+    line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+    line.setAttribute('class','node-link');
+    line.dataset.from = from; line.dataset.to = to;
+    svgLinks.appendChild(line);
+  });
+
+  // узлы
+  NM_NODES.forEach(n=>{
+    const g = document.createElementNS(SVG_NS,'g');
+    g.setAttribute('class','node-group');
+    g.dataset.id = n.id;
+
+    const c = document.createElementNS(SVG_NS,'circle');
+    c.setAttribute('cx', n.x); c.setAttribute('cy', n.y); c.setAttribute('r', n.r);
+    c.setAttribute('class','node-circle');
+
+    const d = document.createElementNS(SVG_NS,'circle');
+    d.setAttribute('cx', n.x); d.setAttribute('cy', n.y); d.setAttribute('r', 3);
+    d.setAttribute('class','node-dot');
+
+    const t = document.createElementNS(SVG_NS,'text');
+    t.setAttribute('x', n.x); t.setAttribute('y', n.y + n.r + 18);
+    t.setAttribute('class','node-label');
+    t.textContent = n.name;
+
+    g.appendChild(c); g.appendChild(d); g.appendChild(t);
+
+    g.addEventListener('mouseenter', ()=>{
+      svgLinks.querySelectorAll('.node-link').forEach(l=>{
+        if(l.dataset.from===n.id || l.dataset.to===n.id){
+          l.classList.add('hot');
+          spawnParticle(l);
+        }
+      });
+      const tip = document.getElementById('lxTooltip');
+      if(tip){
+        tip.innerHTML = `<div class="tt-name">${n.name}</div><div class="tt-val">${n.val}</div><div class="tt-desc">${n.desc}</div>`;
+        tip.classList.add('visible');
+      }
+    });
+    g.addEventListener('mousemove', e=>{
+      const tip = document.getElementById('lxTooltip');
+      const wrap = document.getElementById('lxNodeMap');
+      if(tip && wrap){
+        const r = wrap.getBoundingClientRect();
+        let x = e.clientX - r.left + 18;
+        let y = e.clientY - r.top + 18;
+        if(x + 280 > r.width) x = e.clientX - r.left - 280;
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+      }
+    });
+    g.addEventListener('mouseleave', ()=>{
+      svgLinks.querySelectorAll('.node-link').forEach(l=>l.classList.remove('hot'));
+      const tip = document.getElementById('lxTooltip');
+      if(tip) tip.classList.remove('visible');
+    });
+
+    svgNodes.appendChild(g);
+  });
+}
+
+function spawnParticle(lineEl){
+  const partsG = document.getElementById('lxParticles');
+  if(!partsG) return;
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const x1 = +lineEl.getAttribute('x1');
+  const y1 = +lineEl.getAttribute('y1');
+  const x2 = +lineEl.getAttribute('x2');
+  const y2 = +lineEl.getAttribute('y2');
+  const p = document.createElementNS(SVG_NS,'circle');
+  p.setAttribute('r', 2.6);
+  p.setAttribute('cx', x1); p.setAttribute('cy', y1);
+  p.setAttribute('fill', '#c6ff00');
+  p.setAttribute('opacity', '.95');
+  p.style.filter = 'drop-shadow(0 0 6px #c6ff00)';
+  partsG.appendChild(p);
+  const duration = 700 + Math.random()*500;
+  const start = performance.now();
+  function step(now){
+    const t = Math.min((now-start)/duration, 1);
+    const x = x1 + (x2-x1)*t;
+    const y = y1 + (y2-y1)*t;
+    p.setAttribute('cx', x); p.setAttribute('cy', y);
+    p.setAttribute('opacity', .95*(1 - t*0.7));
+    if(t<1) requestAnimationFrame(step); else p.remove();
+  }
+  requestAnimationFrame(step);
+}
+
+renderNodeMap();
+
+// фоновые редкие частицы (карта "дышит" даже без ховера)
+setInterval(()=>{
+  const lines = document.querySelectorAll('#lxLinks .node-link');
+  if(!lines.length) return;
+  const l = lines[Math.floor(Math.random()*lines.length)];
+  spawnParticle(l);
+}, 1500);
 
 // ── REVEAL ────────────────────────────────────────────────────────────────────
 const io = new IntersectionObserver(e => e.forEach(x => {
