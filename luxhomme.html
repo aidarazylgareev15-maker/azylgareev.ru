@@ -171,11 +171,9 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <span class="brand-dot"></span>
     <span>AZYLGAREEV</span>
   </a>
-  <div class="nav-links">
+    <div class="nav-links">
     <a href="index.html">ГЛАВНАЯ</a>
     <a href="cases.html">КЕЙСЫ</a>
-    <a href="luxhomme.html" class="active">LUXHOMME</a>
-    <a href="bulanti.html">BULANTI</a>
     <a href="blog.html">БЛОГ</a>
     <a href="index.html#contact">КОНТАКТ</a>
   </div>
@@ -402,13 +400,24 @@ const RESULTS = [
 ];
 
 // ── CHART DEFAULTS ────────────────────────────────────────────────────────────
-Chart.defaults.color = '#555';
+Chart.defaults.color = '#7a7a7a';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
 Chart.defaults.font.family = "'JetBrains Mono', monospace";
 Chart.defaults.font.size = 11;
 
 const ACC = '#c6ff00';
 const DIM = 'rgba(255,255,255,0.15)';
+
+const CHART_TOOLTIP = {
+  backgroundColor:'rgba(10,10,10,.92)',
+  borderColor:ACC,
+  borderWidth:1,
+  titleColor:ACC,
+  bodyColor:'#a8a8a8',
+  padding:12,
+  titleFont:{family:"'JetBrains Mono',monospace",size:10},
+  bodyFont:{family:"'JetBrains Mono',monospace",size:13}
+};
 
 function barChart(id, labels, datasets, opts={}) {
   const ctx = document.getElementById(id);
@@ -418,12 +427,16 @@ function barChart(id, labels, datasets, opts={}) {
     data: { labels, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color:'#8a8a8a', boxWidth:10 } } },
-      scales: {
-        x: { grid:{ color:DIM }, ticks:{ color:'#555' } },
-        y: { grid:{ color:DIM }, ticks:{ color:'#555' },
-             ...opts.y },
+      animation:{duration:1000, easing:'easeOutQuart'},
+      plugins: {
+        legend: { labels: { color:'#a8a8a8', boxWidth:10 } },
+        tooltip: CHART_TOOLTIP
       },
+      scales: {
+        x: { grid:{ color:DIM }, ticks:{ color:'#7a7a7a' } },
+        y: { grid:{ color:DIM }, ticks:{ color:'#7a7a7a' }, ...opts.y },
+      },
+      interaction:{intersect:false, mode:'index'},
       ...opts.chart
     }
   });
@@ -436,33 +449,49 @@ function lineChart(id, labels, data, color=ACC) {
     type:'line',
     data:{ labels, datasets:[{
       data, borderColor:color, backgroundColor:color+'22',
-      pointBackgroundColor:color, pointRadius:5, tension:.3, fill:true
+      pointBackgroundColor:color, pointRadius:5, pointHoverRadius:8,
+      tension:.35, fill:true, borderWidth:2.5
     }]},
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
+      animation:{duration:1200, easing:'easeInOutQuart'},
+      plugins:{
+        legend:{display:false},
+        tooltip: CHART_TOOLTIP
+      },
       scales:{
-        x:{ grid:{color:DIM}, ticks:{color:'#555'} },
-        y:{ grid:{color:DIM}, ticks:{color:'#555'} }
-      }
+        x:{ grid:{color:DIM}, ticks:{color:'#7a7a7a'} },
+        y:{ grid:{color:DIM}, ticks:{color:'#7a7a7a'} }
+      },
+      interaction:{intersect:false, mode:'index'}
     }
   });
 }
 
-// ── RENDER CHARTS ─────────────────────────────────────────────────────────────
-barChart('chartBudgetSales', MONTHS, [
-  { label:'Бюджет',  data:BUDGET, backgroundColor:'rgba(255,255,255,0.12)' },
-  { label:'Продажи', data:SALES,  backgroundColor:ACC+'cc' },
-]);
-lineChart('chartCPM',   MONTHS, CPM,   ACC);
-lineChart('chartViews', MONTHS, VIEWS, '#4eff91');
-
-// ROMI — логарифмическая шкала из-за выброса марта
-barChart('chartROI', MONTHS, [{
-  label: 'ROMI %',
-  data: ROMI,
-  backgroundColor: MONTHS.map((_, i) => i === 2 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
-}], { y:{}, chart:{} });
+// ── RENDER CHARTS — запускаем при появлении в viewport ──────────────────────
+function initLuxCharts(){
+  const sec = document.querySelector('.charts-grid');
+  if(!sec) return;
+  let drawn = false;
+  const io = new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting && !drawn){
+      drawn = true;
+      barChart('chartBudgetSales', MONTHS, [
+        { label:'Бюджет',  data:BUDGET, backgroundColor:'rgba(255,255,255,0.12)' },
+        { label:'Продажи', data:SALES,  backgroundColor:ACC+'cc' },
+      ]);
+      lineChart('chartCPM',   MONTHS, CPM,   ACC);
+      lineChart('chartViews', MONTHS, VIEWS, '#4eff91');
+      barChart('chartROI', MONTHS, [{
+        label: 'ROMI %',
+        data: ROMI,
+        backgroundColor: MONTHS.map((_, i) => i === 2 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
+      }]);
+    }
+  },{threshold:0.2});
+  io.observe(sec);
+}
+initLuxCharts();
 
 // ── TOP RESULTS RENDER (без имён) ─────────────────────────────────────────────
 document.getElementById('resultsGrid').innerHTML = RESULTS.map((v, i) => `

@@ -119,6 +119,22 @@ footer { padding:32px 48px; border-top:1px solid var(--line); font-family:var(--
 .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s, transform .6s; }
 .reveal.in { opacity:1; transform:none; }
 
+
+/* КНОПКА ПОЛНОГО КЕЙСА */
+.case-full-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  margin:0 28px 0;
+  padding:14px 24px;
+  background:var(--accent);color:#000;
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  text-decoration:none;font-weight:700;
+  border:2px solid var(--accent);
+  transition:background .2s,color .2s,gap .2s;
+  width:fit-content;
+}
+.case-full-btn:hover{background:transparent;color:var(--accent);gap:18px;}
+.case-full-btn span{transition:transform .2s;}
+.case-full-btn:hover span{transform:translateX(4px);}
 /* MOBILE */
 @media(max-width:960px){
   nav { padding:14px 20px; }
@@ -143,11 +159,9 @@ footer { padding:32px 48px; border-top:1px solid var(--line); font-family:var(--
     <span class="brand-dot"></span>
     <span>AZYLGAREEV</span>
   </a>
-  <div class="nav-links">
+    <div class="nav-links">
     <a href="index.html">ГЛАВНАЯ</a>
-    <a href="cases.html" class="active">КЕЙСЫ</a>
-    <a href="luxhomme.html">LUXHOMME</a>
-    <a href="bulanti.html">BULANTI</a>
+    <a href="cases.html">КЕЙСЫ</a>
     <a href="blog.html">БЛОГ</a>
     <a href="index.html#contact">КОНТАКТ</a>
   </div>
@@ -326,6 +340,10 @@ footer { padding:32px 48px; border-top:1px solid var(--line); font-family:var(--
       </div>
       <div class="case-toggle"><span>ОТКРЫТЬ</span><span class="toggle-arrow">↓</span></div>
     </div>
+
+      <a href="bulanti.html" class="case-full-btn" onclick="event.stopPropagation()">
+        Открыть полный кейс <span>→</span>
+      </a>
     <div class="case-body-wrap">
       <div class="case-story">
         <div class="story-text">
