@@ -45,15 +45,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .lx-hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end;margin-bottom:40px;}
 .lx-hero-photo{
   aspect-ratio:3/4;
-  background:var(--bg-card);
+  background:#0d0d0d;
   border:1px solid var(--line);
   position:relative;overflow:hidden;
-  background-size:cover;
-  background-position:center top;
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
 }
 .lx-hero-photo::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg, transparent 40%, rgba(10,10,10,.8) 100%);
+  background:linear-gradient(180deg, transparent 60%, rgba(10,10,10,.85) 100%);
+  pointer-events:none;
 }
 .lx-hero-photo-cap{
   position:absolute;bottom:14px;left:14px;right:14px;z-index:2;
@@ -113,7 +115,7 @@ canvas{width:100%!important;height:240px!important;}
 .pl-detail b{color:var(--text);}
 
 /* NODE MAP */
-.nodemap-wrap{position:relative;border:1px solid var(--line);background:var(--bg-card);overflow:hidden;}
+.nodemap-wrap{position:relative;border:1px solid var(--line);background:var(--bg-card);overflow:visible;}
 .nodemap{width:100%;height:560px;display:block;cursor:default;}
 .nodemap-hint{position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;z-index:5;letter-spacing:.05em;}
 .nodemap-hint::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent-glow);animation:pulse 2s infinite;}
@@ -126,11 +128,22 @@ canvas{width:100%!important;height:240px!important;}
 .node-group:hover .node-label{fill:var(--accent);}
 .node-link{stroke:var(--accent);stroke-width:.6;opacity:.18;fill:none;transition:opacity .3s,stroke-width .3s;}
 .node-link.hot{opacity:1;stroke-width:1.5;}
-.node-tooltip{position:absolute;pointer-events:none;padding:14px 18px;background:rgba(10,10,10,.96);border:1px solid var(--accent);font-family:var(--font-mono);font-size:12px;color:var(--text);max-width:280px;opacity:0;transition:opacity .2s;z-index:10;backdrop-filter:blur(8px);}
+.node-tooltip{position:absolute;pointer-events:none;padding:14px 18px;background:rgba(10,10,10,.96);border:1px solid var(--accent);font-family:var(--font-mono);font-size:12px;color:var(--text);max-width:280px;opacity:0;transition:opacity .2s;z-index:10;backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,0.5);}
 .node-tooltip.visible{opacity:1;}
 .node-tooltip .tt-name{color:var(--accent);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
 .node-tooltip .tt-val{font-size:22px;color:var(--text);font-family:var(--font-display);font-weight:500;margin-bottom:6px;line-height:1.1;}
 .node-tooltip .tt-desc{color:var(--text-dim);font-size:11px;line-height:1.5;}
+@media(max-width:720px){
+  .node-tooltip{
+    position:absolute;
+    top:auto !important;
+    left:12px !important;
+    right:12px !important;
+    bottom:12px;
+    max-width:none;
+    transform:none;
+  }
+}
 
 
 /* FLAGSHIP GALLERY */
@@ -285,10 +298,10 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       От <em>контент-маркетинга</em><br>до <strong>отдела на 11 чел.</strong><br>
       и <strong>флагмана в Москве</strong>
     </h1>
-    <div class="lx-hero-photo" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-story-photo.jpg');">
+    <div class="lx-hero-photo" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-flagship-main.jpg');">
       <div class="lx-hero-photo-cap">
         <span>// silver_play_button</span>
-        <span>BULANTI · YT 100K+</span>
+        <span>YT · BULANTI 100K+</span>
       </div>
     </div>
   </div>
@@ -443,11 +456,6 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
 
   <!-- ФОТО ФЛАГМАНСКОГО МАГАЗИНА -->
   <div class="flagship-gallery">
-    <div class="fg-main">
-      <div class="fg-img" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-flagship-main.jpg');background-position:center;background-size:contain;background-color:#111;">
-        <div class="fg-cap">// YT SILVER BUTTON · BULANTI 100K</div>
-      </div>
-    </div>
     <div class="fg-grid">
       <div class="fg-img" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-flagship-yt.jpg');"><div class="fg-cap">// FLAGSHIP · MOSCOW · ЗОНА ПРИМЕРКИ</div></div>
       <div class="fg-img" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-flagship-fitting.jpg');"><div class="fg-cap">// FLAGSHIP · MOSCOW · ТОРГОВЫЙ ЗАЛ</div></div>
@@ -612,10 +620,10 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     </div>
 
     <div>
-      <div class="story-photo" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-hero.jpg');"></div>
+      <div class="story-photo" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/bulanti-story-photo.jpg');"></div>
       <div class="story-photo-cap">
         <span>// IMG_01</span>
-        <span>YT silver play</span>
+        <span>YT silver play · AZ</span>
       </div>
     </div>
   </div>
@@ -834,10 +842,17 @@ function renderNodeMap(){
       const tip = document.getElementById('blTooltip');
       const wrap = document.getElementById('blNodeMap');
       if(tip && wrap){
-        const r = wrap.getBoundingClientRect();
-        let x = e.clientX - r.left + 18;
-        let y = e.clientY - r.top + 18;
-        if(x + 280 > r.width) x = e.clientX - r.left - 280;
+        if(window.innerWidth <= 720) return;
+        const wRect = wrap.getBoundingClientRect();
+        const tipW = tip.offsetWidth || 280;
+        const tipH = tip.offsetHeight || 90;
+        const margin = 16;
+        let x = e.clientX - wRect.left + 18;
+        let y = e.clientY - wRect.top + 18;
+        if(x + tipW + margin > wRect.width) x = e.clientX - wRect.left - tipW - 18;
+        if(x < margin) x = margin;
+        if(y + tipH + margin > wRect.height) y = e.clientY - wRect.top - tipH - 18;
+        if(y < margin) y = margin;
         tip.style.left = x + 'px';
         tip.style.top = y + 'px';
       }
@@ -847,6 +862,27 @@ function renderNodeMap(){
       const tip = document.getElementById('blTooltip');
       if(tip) tip.classList.remove('visible');
     });
+    g.addEventListener('touchstart', (e)=>{
+      e.preventDefault();
+      const tip = document.getElementById('blTooltip');
+      if(!tip) return;
+      const wasActive = g.classList.contains('touch-active');
+      svgNodes.querySelectorAll('.node-group').forEach(el=>el.classList.remove('touch-active'));
+      svgLinks.querySelectorAll('.node-link').forEach(l=>l.classList.remove('hot'));
+      if(wasActive){
+        tip.classList.remove('visible');
+        return;
+      }
+      g.classList.add('touch-active');
+      svgLinks.querySelectorAll('.node-link').forEach(l=>{
+        if(l.dataset.from===n.id || l.dataset.to===n.id){
+          l.classList.add('hot');
+          spawnParticle(l);
+        }
+      });
+      tip.innerHTML = `<div class="tt-name">${n.name}</div><div class="tt-val">${n.val}</div><div class="tt-desc">${n.desc}</div>`;
+      tip.classList.add('visible');
+    }, {passive:false});
 
     svgNodes.appendChild(g);
   });
