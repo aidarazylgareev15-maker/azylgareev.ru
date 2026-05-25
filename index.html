@@ -164,49 +164,49 @@ nav.topbar.in { opacity: 1; transform: none; }
   padding: 100px 48px 80px;
   overflow: hidden;
 }
+@media (min-width: 961px) {
+  /* На десктопе резервируем правую часть под фото — текст никогда не заезжает на лицо */
+  .hero { padding-right: min(50vw, 760px); }
+}
 #three-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .hero-content {
   position: relative; z-index: 2;
   max-width: 1400px; margin: 0 auto; width: 100%;
   pointer-events: none;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 60px;
-  align-items: center;
 }
 .hero-content > * { pointer-events: auto; }
-.hero-left{ display:flex; flex-direction:column; }
-/* Фото: интегрировано без рамок, фон сливается со сценой,
-   маска по краям делает плавный переход к кубам Three.js */
+.hero-left{
+  display:flex; flex-direction:column;
+  max-width: 920px;
+  position: relative; z-index: 3;
+}
+/* Фото — отдельный слой по правому краю экрана (не контейнера),
+   PNG с тёмным фоном сливается со страницей естественно. */
 .hero-photo{
-  position:relative;
-  aspect-ratio:3/4;
-  background-size:cover;
-  background-position:center 12%;
-  background-repeat:no-repeat;
-  /* Маска: плавно растворяется по краям, оставляя плотный центр-низ */
-  -webkit-mask-image:
-    radial-gradient(ellipse 75% 85% at 55% 60%, #000 35%, rgba(0,0,0,0.85) 55%, transparent 95%);
-  mask-image:
-    radial-gradient(ellipse 75% 85% at 55% 60%, #000 35%, rgba(0,0,0,0.85) 55%, transparent 95%);
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(50vw, 760px);
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
 }
-.hero-photo::before{
-  /* подсветка под подбородок — едва заметная тень акцентного цвета */
-  content:'';position:absolute;
-  left:50%; bottom:-20px;
-  transform:translateX(-50%);
-  width:60%; height:140px;
-  background:radial-gradient(ellipse at center, rgba(198,255,0,0.08), transparent 70%);
-  pointer-events:none; z-index:-1;
-  filter:blur(20px);
+.hero-photo img{
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom right;
+  /* левый край плавно тает в сцену с кубами */
+  -webkit-mask-image: linear-gradient(to left, #000 55%, rgba(0,0,0,0.3) 85%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 55%, rgba(0,0,0,0.3) 85%, transparent 100%);
 }
-.hero-photo-corners{display:none;}
 .hero-photo-cap{
-  position:absolute; bottom:8px; left:18%; right:8%;
-  z-index:2;
-  font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,.45);
-  display:flex; justify-content:space-between; letter-spacing:.06em;
-  pointer-events:none;
+  position: absolute; bottom: 20px; right: 28px;
+  z-index: 2;
+  font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.35);
+  display: flex; gap: 20px; letter-spacing: .08em;
+  pointer-events: none;
 }
 .hero-meta {
   font-family: var(--font-mono);
@@ -224,7 +224,7 @@ nav.topbar.in { opacity: 1; transform: none; }
 
 .kinetic-title {
   font-family: var(--font-display);
-  font-size: clamp(48px, 9.5vw, 156px);
+  font-size: clamp(40px, 7.8vw, 132px);
   font-weight: 300;
   line-height: 0.92;
   letter-spacing: -0.045em;
@@ -1045,15 +1045,26 @@ footer {
   .nav-links { display: none; }
   .boot-grid { grid-template-columns: 1fr; }
   .boot-center { padding-left: 0; border-left: none; padding-top: 32px; border-top: 1px solid var(--line); }
-  .hero { padding: 100px 20px 60px; }
-  .hero-content { grid-template-columns: 1fr; gap: 32px; }
-  .hero-left{ order:2; }
-  .hero-photo {
-    order:1;
-    max-width: 320px;
-    margin: 0 auto;
-    aspect-ratio: 3/4;
+  .hero {
+    padding: 100px 20px 60px;
+    flex-direction: column;
   }
+  .hero-left{ max-width: 100%; }
+  /* На мобиле фото возвращаем в поток после текста, не absolute */
+  .hero-photo {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: 360px;
+    margin: 40px auto 0;
+    aspect-ratio: 3/4;
+    height: auto;
+  }
+  .hero-photo img{
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+  }
+  .hero-photo-cap{ display:none; }
   .section { padding: 80px 20px; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 12px; }
   .metrics-grid { grid-template-columns: 1fr 1fr; }
@@ -1171,12 +1182,14 @@ footer {
       </div>
     </div>
     </div><!-- /hero-left -->
+  </div><!-- /hero-content -->
 
-    <div class="hero-photo" style="background-image:url('https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/hero-new.png');">
-      <div class="hero-photo-cap">
-        <span>// SUBJECT_01</span>
-        <span>А.АЗЫЛГАРЕЕВ · 2025</span>
-      </div>
+  <!-- Фото за пределами hero-content: absolute относительно section.hero -->
+  <div class="hero-photo">
+    <img src="https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/hero-portrait.png" alt="Айдар Азылгареев — портрет">
+    <div class="hero-photo-cap">
+      <span>// SUBJECT_01</span>
+      <span>А.АЗЫЛГАРЕЕВ · 2025</span>
     </div>
   </div>
 </section>
@@ -1295,9 +1308,9 @@ footer {
         <div class="cr-period">октябрь 2024 — май 2025 · руководитель направления</div>
       </div>
       <div class="cr-stats">
-        <div class="cr-stat"><b>2.78M ₽</b><span>продажи</span></div>
-        <div class="cr-stat"><b>450%</b><span>ROMI</span></div>
-        <div class="cr-stat"><b>9.91M</b><span>охват</span></div>
+        <div class="cr-stat"><b>3.08M ₽</b><span>продажи</span></div>
+        <div class="cr-stat"><b>265%</b><span>ROMI</span></div>
+        <div class="cr-stat"><b>12.1M</b><span>охват</span></div>
       </div>
       <div class="cr-arrow">подробно <span>→</span></div>
     </a>
@@ -1480,9 +1493,9 @@ const BOOT_LINES = [
   { t: '/ connecting to /content-factory/luxhomme', d: 120 },
   { t: '/ syncing metrics: 1014 placements', d: 80 },
   { t: '/ reach: 9 910 779 views', d: 80, cls: 'hot' },
-  { t: '/ budget: 728 500 ₽ → sales: 2 780 000 ₽', d: 90 },
-  { t: '/ ROMI: 450%', d: 80, cls: 'hot' },
-  { t: '/ avg CPM: 75 ₽ (market: 250–500 ₽)', d: 80 },
+  { t: '/ budget: 843 500 ₽ → sales: 3 075 985 ₽', d: 90 },
+  { t: '/ ROMI: 265%', d: 80, cls: 'hot' },
+  { t: '/ avg CPM: 70 ₽ (market: 250–500 ₽)', d: 80 },
   { t: '/ NOTE: маркетинг → трафик. unit-economics ready.', d: 100, cls: 'warn' },
   { t: '/ team: 20 creators, 6 → 11 people managed', d: 80 },
   { t: '/ tools: я.директ, CRM, telegram API, аналитика', d: 80 },
@@ -1731,11 +1744,11 @@ function initGraph() {
   window.addEventListener('resize', resize);
 
   const NODES = [
-    { x: 0.18, y: 0.30, r: 22, label: 'reach',     val: '9.91M',   note: 'просмотров за 4 месяца' },
-    { x: 0.42, y: 0.55, r: 38, label: 'sales',     val: '2.78M ₽', note: 'выручка с маркетплейсов' },
-    { x: 0.70, y: 0.25, r: 28, label: 'romi',      val: '450%',    note: 'возврат на маркетинг' },
-    { x: 0.85, y: 0.62, r: 18, label: 'cpm',       val: '75 ₽',    note: 'при рынке 250–500 ₽' },
-    { x: 0.55, y: 0.18, r: 14, label: 'orders',    val: '204',     note: 'заказа на WB + Ozon' },
+    { x: 0.18, y: 0.30, r: 22, label: 'reach',     val: '12.1M',   note: 'просмотров за 4 месяца' },
+    { x: 0.42, y: 0.55, r: 38, label: 'sales',     val: '3.08M ₽', note: 'выручка с маркетплейсов' },
+    { x: 0.70, y: 0.25, r: 28, label: 'romi',      val: '265%',    note: 'возврат на маркетинг' },
+    { x: 0.85, y: 0.62, r: 18, label: 'cpm',       val: '70 ₽',    note: 'при рынке 250–500 ₽' },
+    { x: 0.55, y: 0.18, r: 14, label: 'orders',    val: '225',     note: 'заказа на WB + Ozon' },
     { x: 0.28, y: 0.75, r: 16, label: 'team',      val: '1→11',    note: 'вырастил команды в проектах' },
     { x: 0.62, y: 0.82, r: 16, label: 'placements',val: '1014',    note: 'размещений' },
     { x: 0.92, y: 0.30, r: 12, label: 'best cpm',  val: '35 ₽',    note: 'лучший месяц — май' },
@@ -1917,8 +1930,8 @@ function initCareerTimeline(){
       co:'ООО «Саудагар Е-Ком» · LuxHomme',
       role:'Руководитель контент-завода',
       period:'дек 2025 — по настоящее время',
-      desc:'Устроился 21 декабря на выдуманную должность «руководитель контент-завода»: дешёвый виральный контент для маркетплейсов под метрику CPM. Стартовал с 4 креаторов, к маю масштабировал сетку до 19. Параллельно — направление масспостинга в TikTok и нейросетевой контент-завод. ROMI 450%, CPM 75 ₽ при рынке 250–500 ₽.',
-      tags:['WB','OZON','инфлюенс','CPM 75₽','ROMI 450%','команда 4→19','нейросети'],
+      desc:'Устроился 21 декабря на выдуманную должность «руководитель контент-завода»: дешёвый виральный контент для маркетплейсов под метрику CPM. Стартовал с 4 креаторов, к маю масштабировал сетку до 19. Параллельно — направление масспостинга в TikTok и нейросетевой контент-завод. ROMI 265%, CPM 70 ₽ при рынке 250–500 ₽.',
+      tags:['WB','OZON','инфлюенс','CPM 70₽','ROMI 265%','команда 4→19','нейросети'],
       link:'luxhomme.html'
     },
   ];

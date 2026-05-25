@@ -163,6 +163,58 @@ canvas{width:100%!important;height:220px!important;}
   .story-marks{grid-template-columns:1fr;}
 }
 
+/* OFFICE PHOTOS */
+.office-grid{
+  display:grid;
+  grid-template-columns: 1.6fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-top: 32px;
+}
+.og-item{
+  position:relative;
+  overflow:hidden;
+  background:#111;
+}
+.og-wide{
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+}
+.og-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition: transform .6s cubic-bezier(.22,1,.36,1), filter .4s;
+  filter: brightness(.88) saturate(.7);
+}
+.og-item:hover img{
+  transform: scale(1.03);
+  filter: brightness(.95) saturate(.9);
+}
+.og-wide img{ min-height: 400px; }
+.og-item:not(.og-wide) img{ min-height: 240px; }
+.og-cap{
+  position:absolute;
+  bottom:0; left:0; right:0;
+  padding: 10px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,.75));
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,.55);
+  letter-spacing: .08em;
+}
+@media(max-width:720px){
+  .office-grid{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .og-wide{ grid-column:1; grid-row:auto; }
+  .og-wide img, .og-item:not(.og-wide) img{ min-height:240px; }
+}
+
 /* TOP RESULTS (без имён) */
 .results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
 .result-card{background:var(--bg-card);padding:24px;transition:background .25s;display:flex;flex-direction:column;gap:8px;position:relative;}
@@ -230,7 +282,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
   <h1 class="lx-title">
     Контент-завод<br>
     <em>с нуля</em> до<br>
-    <strong>2.78M ₽ продаж</strong>
+    <strong>3.08M ₽ продаж</strong>
   </h1>
 </div>
 
@@ -290,8 +342,8 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
     <div class="story-mark">
       <div class="sm-creators"><strong>19</strong></div>
       <div class="sm-month">май · масштаб</div>
-      <div class="sm-headline">19 креаторов<br>+ TikTok-арбитраж</div>
-      <div class="sm-note">Уник.контент и масспостинг в TikTok, отдельное направление контент-завода на нейросетях.</div>
+      <div class="sm-headline">520К ₽ продаж<br><span style="color:var(--accent)">ROMI 208%</span></div>
+      <div class="sm-note">3.99M охват, CPM 42 ₽. Сетка 19 креаторов + TikTok-арбитраж + контент-завод на нейросетях.</div>
     </div>
   </div>
 </div>
@@ -300,27 +352,27 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
 <div class="lx-section" style="padding-top:40px;">
   <div class="lx-summary">
     <div class="sum-item">
-      <div class="sum-num">2.78M<span>₽</span></div>
+      <div class="sum-num">3.08M<span>₽</span></div>
       <div class="sum-label">продажи</div>
-      <div class="sum-note">вложено 728 500 ₽</div>
+      <div class="sum-note">вложено 843 500 ₽</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">450<span>%</span></div>
+      <div class="sum-num">265<span>%</span></div>
       <div class="sum-label">ROMI</div>
       <div class="sum-note">за 4 месяца</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">9.91<span>M</span></div>
+      <div class="sum-num">12.1<span>M</span></div>
       <div class="sum-label">просмотров</div>
       <div class="sum-note">4 соцсети</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">75<span>₽</span></div>
+      <div class="sum-num">70<span>₽</span></div>
       <div class="sum-label">средний CPM</div>
       <div class="sum-note">рынок: 250–500 ₽</div>
     </div>
     <div class="sum-item">
-      <div class="sum-num">204</div>
+      <div class="sum-num">225</div>
       <div class="sum-label">заказа</div>
       <div class="sum-note">WB + OZON</div>
     </div>
@@ -346,7 +398,7 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       <canvas id="chartCPM"></canvas>
     </div>
     <div class="chart-box">
-      <div class="chart-title">просмотры по месяцам (тыс.)</div>
+      <div class="chart-title">просмотры по месяцам (млн)</div>
       <canvas id="chartViews"></canvas>
     </div>
     <div class="chart-box">
@@ -397,12 +449,12 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
       </tr>
       <tr style="background:rgba(198,255,0,0.04)">
         <td class="td-neutral">Май ★</td>
-        <td class="td-dim">54 000 ₽</td>
-        <td class="td-dim">1.52M</td>
-        <td class="td-best">35 ₽ ↓</td>
-        <td class="td-neutral">226 000 ₽</td>
-        <td class="td-num">319%</td>
-        <td class="td-dim">12</td>
+        <td class="td-dim">169 000 ₽</td>
+        <td class="td-dim">3.99M</td>
+        <td class="td-best">42 ₽ ↓</td>
+        <td class="td-neutral">520 224 ₽</td>
+        <td class="td-num">208%</td>
+        <td class="td-dim">33</td>
       </tr>
     </tbody>
   </table>
@@ -477,6 +529,27 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
   <div class="results-grid" id="resultsGrid"></div>
 </div>
 
+<!-- OFFICE PHOTOS -->
+<div class="lx-section reveal">
+  <div class="sec-label">// за кулисами</div>
+  <h2 class="sec-title"><em>Люди</em> и <strong>моменты</strong> проекта</h2>
+
+  <div class="office-grid">
+    <div class="og-item og-wide">
+      <img src="https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/lx-office-party.jpg" alt="Новогодний корпоратив команды контент-завода" loading="lazy">
+      <div class="og-cap">// декабрь 2024 · первый корпоратив команды · старт проекта</div>
+    </div>
+    <div class="og-item">
+      <img src="https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/lx-office-gramota.jpg" alt="Грамоты — Заводчанин года" loading="lazy">
+      <div class="og-cap">// «заводчанин года» · грамоты от ООО Саудагар Е-Ком</div>
+    </div>
+    <div class="og-item">
+      <img src="https://aidarazylgareev15-maker.github.io/azylgareev.ru/images/lx-office-work.jpg" alt="Работа в офисе" loading="lazy">
+      <div class="og-cap">// в процессе · встреча с аналитикой</div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <span>AIDAR AZYLGAREEV · azylgareev.ru · <a href="cases.html" style="color:var(--text-faint);text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-faint)'">← все кейсы</a></span>
   <span>
@@ -488,11 +561,11 @@ footer{padding:32px 48px;border-top:1px solid var(--line);margin-top:100px;font-
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const MONTHS = ['Февраль', 'Март', 'Апрель', 'Май'];
-const BUDGET  = [147000, 229000, 298500, 54000];
-const SALES   = [488227, 1076103, 991431, 226379];
-const CPM     = [46.1, 61.1, 227.7, 35.5];
-const VIEWS   = [3189, 3635, 1311, 1521]; // тыс.
-const ROMI    = [232, 386, 232, 319];
+const BUDGET  = [147000, 229000, 298500, 169000];
+const SALES   = [488227, 1076103, 991431, 520224];
+const CPM     = [46, 61, 228, 42];
+const VIEWS   = [3.19, 3.63, 1.31, 3.99]; // млн
+const ROMI    = [232, 386, 232, 208];
 
 // ── TOP RESULTS (без имён — только цифры) ─────────────────────────────────────
 const RESULTS = [
@@ -547,7 +620,7 @@ function barChart(id, labels, datasets, opts={}) {
   });
 }
 
-function lineChart(id, labels, data, color=ACC) {
+function lineChart(id, labels, data, color=ACC, suffix='') {
   const ctx = document.getElementById(id);
   if (!ctx) return;
   new Chart(ctx, {
@@ -562,11 +635,13 @@ function lineChart(id, labels, data, color=ACC) {
       animation:{duration:1200, easing:'easeInOutQuart'},
       plugins:{
         legend:{display:false},
-        tooltip: CHART_TOOLTIP
+        tooltip: { ...CHART_TOOLTIP, callbacks: {
+          label: (ctx) => ' ' + ctx.parsed.y + suffix
+        }}
       },
       scales:{
         x:{ grid:{color:DIM}, ticks:{color:'#7a7a7a'} },
-        y:{ grid:{color:DIM}, ticks:{color:'#7a7a7a'} }
+        y:{ grid:{color:DIM}, ticks:{color:'#7a7a7a', callback: (v) => v + suffix} }
       },
       interaction:{intersect:false, mode:'index'}
     }
@@ -585,12 +660,12 @@ function initLuxCharts(){
         { label:'Бюджет',  data:BUDGET, backgroundColor:'rgba(255,255,255,0.12)' },
         { label:'Продажи', data:SALES,  backgroundColor:ACC+'cc' },
       ]);
-      lineChart('chartCPM',   MONTHS, CPM,   ACC);
-      lineChart('chartViews', MONTHS, VIEWS, '#4eff91');
+      lineChart('chartCPM',   MONTHS, CPM,   ACC, ' ₽');
+      lineChart('chartViews', MONTHS, VIEWS, '#4eff91', 'M');
       barChart('chartROI', MONTHS, [{
         label: 'ROMI %',
         data: ROMI,
-        backgroundColor: MONTHS.map((_, i) => i === 2 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
+        backgroundColor: MONTHS.map((_, i) => i === 1 ? 'rgba(198,255,0,0.4)' : ACC+'88'),
       }]);
     }
   },{threshold:0.2});
@@ -611,13 +686,13 @@ document.getElementById('resultsGrid').innerHTML = RESULTS.map((v, i) => `
 
 // ── NODE MAP (интерактивная карта показателей с частицами) ────────────────────
 const NM_NODES = [
-  { id:'reach',      x:170,  y:230, r:28, name:'REACH',      val:'9.91M',   desc:'Суммарный охват за 4 месяца' },
-  { id:'orders',     x:760,  y:90,  r:22, name:'ORDERS',     val:'204',     desc:'Заказы на WB + OZON' },
-  { id:'romi',       x:1020, y:170, r:34, name:'ROMI',       val:'450%',    desc:'Возврат маркетинговых инвестиций' },
-  { id:'cpm',        x:1250, y:380, r:24, name:'CPM',        val:'75 ₽',    desc:'Средний CPM (рынок: 250–500 ₽)' },
-  { id:'best',       x:1340, y:200, r:18, name:'BEST CPM',   val:'35 ₽',    desc:'Лучший месяц — май' },
-  { id:'sales',      x:540,  y:370, r:38, name:'SALES',      val:'2.78M ₽', desc:'Продажи на маркетплейсах' },
-  { id:'budget',     x:200,  y:480, r:22, name:'BUDGET',     val:'728K ₽',  desc:'Совокупный бюджет за 4 месяца' },
+  { id:'reach',      x:170,  y:230, r:28, name:'REACH',      val:'12.1M',   desc:'Суммарный охват за 4 месяца' },
+  { id:'orders',     x:760,  y:90,  r:22, name:'ORDERS',     val:'225',     desc:'Заказы на WB + OZON' },
+  { id:'romi',       x:1020, y:170, r:34, name:'ROMI',       val:'265%',    desc:'Возврат маркетинговых инвестиций' },
+  { id:'cpm',        x:1250, y:380, r:24, name:'CPM',        val:'70 ₽',    desc:'Средний CPM (рынок: 250–500 ₽)' },
+  { id:'best',       x:1340, y:200, r:18, name:'BEST CPM',   val:'42 ₽',    desc:'Лучший месяц — май' },
+  { id:'sales',      x:540,  y:370, r:38, name:'SALES',      val:'3.08M ₽', desc:'Продажи на маркетплейсах' },
+  { id:'budget',     x:200,  y:480, r:22, name:'BUDGET',     val:'843K ₽',  desc:'Совокупный бюджет за 4 месяца' },
   { id:'placements', x:870,  y:480, r:26, name:'PLACEMENTS', val:'1014',    desc:'Размещений за 4 месяца' }
 ];
 const NM_LINKS = [
